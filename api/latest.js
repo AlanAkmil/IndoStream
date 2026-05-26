@@ -1,7 +1,7 @@
 // api/latest.js
 // Scrape latest videos dari dubbindo.site
 
-const BASE = 'https://www.dubbindo.site';
+const BASE = 'https://uvideo.xyz';
 
 const CATEGORY_MAP = {
   '1': 'Film Movie',
@@ -36,7 +36,7 @@ function parseVideos(html) {
   const dateRegex = /(\d{2}\/\d{2}\/\d{2,4}|\d{4}-\d{2}-\d{2})/;
 
   // Alternative: parse anchor tags with watch URLs
-  const watchRegex = /href="(https?:\/\/www\.dubbindo\.site\/watch\/([^"]+)_([a-zA-Z0-9]+)\.html)"/g;
+  const watchRegex = /href="(https?:\/\/(?:www\.)?uvideo\.xyz\/watch\/([^"]+)_([a-zA-Z0-9]+)\.html)"/g;
   const seenIds = new Set();
 
   let match;
