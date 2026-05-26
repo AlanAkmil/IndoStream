@@ -13,6 +13,13 @@ export default async function handler(req, res) {
     },
   });
   const html = await response.text();
+
+  // Cari bagian yang ada link watch-nya
+  const watchIdx = html.indexOf('/watch/');
+  const snippet = watchIdx > -1
+    ? html.slice(Math.max(0, watchIdx - 1000), watchIdx + 3000)
+    : html.slice(8000, 16000);
+
   res.setHeader('Content-Type', 'text/plain');
-  res.send(html.slice(0, 8000));
+  res.send(`TOTAL LENGTH: ${html.length}\nWATCH IDX: ${watchIdx}\n\n---SNIPPET---\n${snippet}`);
 }
