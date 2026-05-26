@@ -13,6 +13,18 @@ async function fetchPage(url) {
   return res.text();
 }
 
+function extractThumb(ctx) {
+  // Prioritas 1: path /upload/photos/ (thumbnail video)
+  const m1 = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/photos\/[^"]+\.(?:jpeg|jpg|png|webp))"/i);
+  if (m1) return m1[1];
+
+  // Prioritas 2: s3 dubbindo tapi exclude avatar/users/profile
+  const m2 = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/(?!avatars|users|profile)[^"]+\.(?:jpeg|jpg|png|webp))"/i);
+  if (m2) return m2[1];
+
+  return '';
+}
+
 function parseVideos(html) {
   const videos = [];
   const watchRegex = /href="https?:\/\/www\.dubbindo\.site\/watch\/([^"]+\.html)"/g;
@@ -27,16 +39,17 @@ function parseVideos(html) {
     const start = Math.max(0, match.index - 800);
     const ctx = html.slice(start, match.index + fullSlug.length + 400);
 
-    const thumbMatch = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/[^"]+)"/);
-    const thumb = thumbMatch ? thumbMatch[1] : '';
+    const thumb = extractThumb(ctx);
 
     const titleMatch = ctx.match(/title="([^"]{3,150})"/) || ctx.match(/alt="([^"]{3,150})"/);
-    const title = titleMatch ? titleMatch[1].replace(/^⁣/, '').trim() : fullSlug.replace(/_[^_]+\.html$/, '').replace(/-/g, ' ');
+    const title = titleMatch
+      ? titleMatch[1].replace(/^⁣/, '').trim()
+      : fullSlug.replace(/_[^_]+\.html$/, '').replace(/-/g, ' ');
 
     const viewsMatch = ctx.match(/<span>(\d[\d.,]*)\s*Views?<\/span>/i);
     const views = viewsMatch ? viewsMatch[1] : '0';
 
-    const timeMatch = ctx.match(/<span>([^<]*(?:second|minute|hour|day|week|month|year|ago)[^<]*)<\/span>/i);
+    const timeMatch = ctx.match(/<span>([^<]*(?:second|minute|hour|day|week|month|year|ago|detik|menit|jam|hari)[^<]*)<\/span>/i);
     const date = timeMatch ? timeMatch[1].trim() : '2026';
 
     if (title) {
