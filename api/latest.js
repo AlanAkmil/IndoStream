@@ -13,23 +13,33 @@ async function fetchPage(url) {
   return res.text();
 }
 
+function extractThumb(ctx) {
+  // Prioritas 1: path /upload/photos/ (thumbnail video)
+  const m1 = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/photos\/[^"]+\.(?:jpeg|jpg|png|webp))"/i);
+  if (m1) return m1[1];
+
+  // Prioritas 2: s3 dubbindo tapi exclude avatar/users/profile
+  const m2 = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/(?!avatars|users|profile)[^"]+\.(?:jpeg|jpg|png|webp))"/i);
+  if (m2) return m2[1];
+
+  return '';
+}
+
 function parseVideos(html) {
   const videos = [];
-  // Match: href="https://www.dubbindo.site/watch/slug_ID.html"
   const watchRegex = /href="https?:\/\/www\.dubbindo\.site\/watch\/([^"]+\.html)"/g;
   const seenIds = new Set();
 
   let match;
   while ((match = watchRegex.exec(html)) !== null) {
-    const fullSlug = match[1]; // e.g. love-100-c-2010_7cYjL6VhWiZT4C6.html
+    const fullSlug = match[1];
     if (seenIds.has(fullSlug)) continue;
     seenIds.add(fullSlug);
 
     const start = Math.max(0, match.index - 800);
     const ctx = html.slice(start, match.index + fullSlug.length + 400);
 
-    const thumbMatch = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/[^"]+)"/);
-    const thumb = thumbMatch ? thumbMatch[1] : '';
+    const thumb = extractThumb(ctx);
 
     const titleMatch = ctx.match(/title="([^"]{3,150})"/) || ctx.match(/alt="([^"]{3,150})"/);
     const rawTitle = titleMatch ? titleMatch[1].replace(/^⁣/, '').trim() : fullSlug.replace(/_[^_]+\.html$/, '').replace(/-/g, ' ');
@@ -46,7 +56,7 @@ function parseVideos(html) {
 
     if (title) {
       videos.push({
-        id: fullSlug,       // full slug, e.g. "love-100-c-2010_7cYjL6VhWiZT4C6.html"
+        id: fullSlug,
         title,
         thumb,
         views,
