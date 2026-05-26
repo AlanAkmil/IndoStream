@@ -1,12 +1,4 @@
-// api/latest.js
 const BASE = 'https://www.dubbindo.site';
-
-const CATEGORY_MAP = {
-  '1': 'Film Movie',
-  '3': 'TV Series',
-  '4': 'Anime Movie',
-  '5': 'Anime Series',
-};
 
 async function fetchPage(url) {
   const res = await fetch(url, {
@@ -23,7 +15,6 @@ async function fetchPage(url) {
 
 function parseVideos(html) {
   const videos = [];
-  // Match watch URLs: /watch/slug_ID.html
   const watchRegex = /href="(https?:\/\/www\.dubbindo\.site\/watch\/([^"]+)_([a-zA-Z0-9]+)\.html)"/g;
   const seenIds = new Set();
 
@@ -37,30 +28,34 @@ function parseVideos(html) {
     seenIds.add(videoId);
 
     const start = Math.max(0, match.index - 800);
-    const ctx = html.slice(start, match.index + fullUrl.length + 300);
+    const ctx = html.slice(start, match.index + fullUrl.length + 400);
 
-    // Thumbnail from s3.dubbindo.my.id
-    const thumbMatch = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/photos\/[^"]+)"/);
+    const thumbMatch = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/[^"]+)"/);
     const thumb = thumbMatch ? thumbMatch[1] : '';
 
-    // Title from h4 title attribute or alt attribute
-    const titleH4Match = ctx.match(/title="([^"]{3,150})"/);
-    const titleAltMatch = ctx.match(/alt="([^"]{3,150})"/);
-    let title = '';
-    if (titleH4Match) title = titleH4Match[1];
-    else if (titleAltMatch) title = titleAltMatch[1];
-    else title = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const titleMatch = ctx.match(/title="([^"]{3,150})"/) || ctx.match(/alt="([^"]{3,150})"/);
+    const title = titleMatch ? titleMatch[1] : slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
-    // Views
-    const viewsMatch = ctx.match(/(\d[\d.,]*)\s*Views?/i);
+    const viewsMatch = ctx.match(/<span>(\d[\d.,]*)\s*Views?<\/span>/i);
     const views = viewsMatch ? viewsMatch[1] : '0';
 
-    // Duration
     const durationMatch = ctx.match(/class="video-duration">([^<]+)<\/div>/);
     const duration = durationMatch ? durationMatch[1].trim() : '';
 
+    const timeMatch = ctx.match(/<span>([^<]*(?:second|minute|hour|day|week|month|year|ago|detik|menit|jam|hari)[^<]*)<\/span>/i);
+    const date = timeMatch ? timeMatch[1].trim() : '2026';
+
     if (videoId && title) {
-      videos.push({ id: videoId, title, thumb, views, duration, url: fullUrl });
+      videos.push({
+        id: videoId,
+        title,
+        thumb,
+        views,
+        duration,
+        date,
+        catName: 'Dubbing Indonesia',
+        url: fullUrl
+      });
     }
   }
 
@@ -81,18 +76,7 @@ export default async function handler(req, res) {
     const html = await fetchPage(url);
     const videos = parseVideos(html);
 
-    // Pagination
-    const totalPagesMatch = html.match(/page_id=(\d+)[^"]*"[^>]*>[^<]*<\/a>\s*<\/li>\s*<li>\s*<a[^>]*title='Last Page'/);
-    const totalPages = totalPagesMatch ? parseInt(totalPagesMatch[1]) : 1;
-
-    res.status(200).json({
-      status: 200,
-      page: parseInt(page),
-      category,
-      total: videos.length,
-      totalPages,
-      videos,
-    });
+    res.status(200).json({ status: 200, page: parseInt(page), category, total: videos.length, videos });
   } catch (err) {
     res.status(500).json({ status: 500, error: err.message, videos: [] });
   }
