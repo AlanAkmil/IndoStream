@@ -1,7 +1,7 @@
 // api/detail.js
 // Scrape halaman detail series/movie dari dubbindo
 
-const BASE = 'https://www.dubbindo.site';
+const BASE = 'https://uvideo.xyz';
 
 export default async function handler(req, res) {
   const { url } = req.query;
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
     // Title
     const titleMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/) || html.match(/<title>([^<]+)<\/title>/);
-    const title = titleMatch ? titleMatch[1].replace(' - Dubbindo', '').trim() : '';
+    const title = titleMatch ? titleMatch[1].replace(' - UVideo', '').trim() : '';
 
     // Poster/thumb
     const posterMatch = html.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/photos\/[^"]+)"/);
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     const embedId = embedMatch ? embedMatch[1] : '';
 
     // All episode links
-    const epRegex = /href="(https?:\/\/www\.dubbindo\.site\/watch\/([^"]+)_([a-zA-Z0-9]+)\.html)"/g;
+    const epRegex = /href="(https?:\/\/(?:www\.)?uvideo\.xyz\/watch\/([^"]+)_([a-zA-Z0-9]+)\.html)"/g;
     const episodes = [];
     const seenIds = new Set();
     let epMatch;
