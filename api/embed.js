@@ -1,7 +1,7 @@
 // api/embed.js
 // Fetch embed page dubbindo dan extract direct MP4 URLs
 
-const BASE = 'https://www.dubbindo.site';
+const BASE = 'https://uvideo.xyz';
 
 export default async function handler(req, res) {
   const { id, color = 'c9a84c' } = req.query;
@@ -59,7 +59,7 @@ export default async function handler(req, res) {
 
     // Extract title
     const titleMatch = html.match(/<title>([^<]+)<\/title>/);
-    const title = titleMatch ? titleMatch[1].replace(' - Dubbindo', '').trim() : '';
+    const title = titleMatch ? titleMatch[1].replace(' - UVideo', '').trim() : '';
 
     // Sort by quality
     const qualityOrder = { '720p': 0, '480p': 1, '360p': 2, '240p': 3, 'auto': 4 };
