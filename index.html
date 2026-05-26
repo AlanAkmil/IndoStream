@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IndoStream – Dubbing Indonesia</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dim: #7a6030;
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #1a1a1a;
+  --bg4: #222222;
+  --text: #f0ece0;
+  --text-dim: #888880;
+  --green: #50c878;
+  --radius: 10px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:var(--bg2); }
+::-webkit-scrollbar-thumb { background:var(--gold-dim); border-radius:2px; }
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  background:rgba(10,10,10,0.92);
+  border-bottom:1px solid rgba(201,168,76,0.08);
+  backdrop-filter:blur(14px);
+}
+.logo { font-family:'Cinzel',serif; font-size:20px; font-weight:700; letter-spacing:1px; cursor:pointer; }
+.logo span { color:var(--gold); }
+.nav-right { display:flex; align-items:center; gap:10px; }
+.nav-search-wrap { position:relative; }
+.nav-search {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(201,168,76,0.18);
+  border-radius:20px; padding:7px 12px 7px 32px;
+  color:var(--text); font-family:'DM Sans',sans-serif; font-size:12px;
+  width:140px; outline:none; transition:all .3s;
+}
+.nav-search:focus { border-color:var(--gold); width:180px; background:rgba(201,168,76,0.06); }
+.nav-search::placeholder { color:var(--text-dim); }
+.nav-search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.4; }
+.nav-search-icon svg { width:14px; height:14px; stroke:var(--text); fill:none; stroke-width:2; }
+
+/* PAGES */
+.page { display:none; padding-bottom:75px; animation:fadeIn .25s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* HERO */
+.hero {
+  position:relative; min-height:95vh;
+  display:flex; align-items:flex-end; padding-bottom:36px;
+  overflow:hidden;
+}
+.hero-bg {
+  position:absolute; inset:0;
+  background-size:cover; background-position:center top;
+  filter:blur(3px) brightness(0.3);
+  transform:scale(1.05);
+  transition:background-image .5s ease;
+}
+.hero-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(10,10,10,.2) 0%, rgba(10,10,10,.5) 55%, rgba(10,10,10,1) 100%);
+}
+.hero-content { position:relative; z-index:2; width:100%; padding:0 18px; display:flex; gap:16px; align-items:flex-end; }
+.hero-poster {
+  width:105px; flex-shrink:0; border-radius:10px; overflow:hidden;
+  border:2px solid rgba(201,168,76,.4); box-shadow:0 10px 40px rgba(0,0,0,.7);
+  animation:slideUp .5s ease both;
+}
+.hero-poster img { width:100%; display:block; }
+.hero-info { flex:1; animation:slideUp .5s .1s ease both; }
+@keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+.badge {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(201,168,76,.12); border:1px solid var(--gold);
+  border-radius:20px; padding:3px 10px; font-size:10px; font-weight:600;
+  color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;
+}
+.badge.ongoing::before { content:''; width:6px; height:6px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+
+.hero-title { font-family:'Cinzel',serif; font-size:24px; font-weight:700; line-height:1.2; margin-bottom:8px; text-shadow:0 2px 12px rgba(0,0,0,.6); }
+.hero-meta { font-size:11px; color:var(--text-dim); margin-bottom:18px; display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+.hero-meta .dot { color:var(--gold-dim); }
+
+.btn-group { display:flex; flex-direction:column; gap:9px; }
+.btn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 18px; border-radius:10px; font-family:'DM Sans',sans-serif;
+  font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all .25s;
+}
+.btn-primary { background:linear-gradient(135deg,var(--gold),#a07830); color:#0a0a0a; box-shadow:0 4px 18px rgba(201,168,76,.3); }
+.btn-primary:active { transform:scale(.97); }
+.btn-secondary { background:rgba(255,255,255,.07); color:var(--text); border:1px solid rgba(255,255,255,.1); }
+.btn-secondary:active { transform:scale(.97); }
+
+/* SECTION */
+.section { padding:22px 18px; }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.section-title { font-family:'Cinzel',serif; font-size:13px; font-weight:600; color:var(--gold); letter-spacing:2px; text-transform:uppercase; }
+.section-line { flex:1; height:1px; background:linear-gradient(to right,rgba(201,168,76,.25),transparent); margin-left:10px; }
+.see-all { font-size:11px; color:var(--text-dim); cursor:pointer; transition:color .2s; text-decoration:none; margin-left:10px; }
+.see-all:hover { color:var(--gold); }
+
+/* CHIPS */
+.chips { display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; margin-bottom:14px; }
+.chips::-webkit-scrollbar { display:none; }
+.chip {
+  flex-shrink:0; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:500;
+  cursor:pointer; border:1px solid rgba(201,168,76,.22); background:transparent;
+  color:var(--text-dim); transition:all .2s;
+}
+.chip.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); font-weight:600; }
+.chip:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
+
+/* CARD SCROLL */
+.card-scroll { display:flex; gap:11px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
+.card-scroll::-webkit-scrollbar { display:none; }
+.card { flex-shrink:0; width:108px; cursor:pointer; transition:transform .25s; }
+.card:hover { transform:translateY(-3px); }
+.card:active { transform:scale(.96); }
+.card-thumb {
+  width:100%; aspect-ratio:3/4; border-radius:8px; overflow:hidden;
+  position:relative; background:var(--bg3); margin-bottom:7px;
+  border:1px solid rgba(201,168,76,.12);
+}
+.card-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s; }
+.card:hover .card-thumb img { transform:scale(1.06); }
+.card-badge {
+  position:absolute; bottom:5px; left:5px;
+  background:rgba(10,10,10,.85); border:1px solid var(--gold-dim);
+  color:var(--gold-light); font-size:8px; font-weight:600;
+  padding:2px 6px; border-radius:4px; letter-spacing:.5px; text-transform:uppercase;
+}
+.card-title { font-size:11px; font-weight:500; color:var(--text); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card-sub { font-size:10px; color:var(--text-dim); margin-top:2px; }
+
+/* REKO LIST */
+.reko-list { display:flex; flex-direction:column; gap:10px; }
+.reko-item {
+  display:flex; align-items:center; gap:12px; cursor:pointer;
+  padding:8px; border-radius:10px; transition:background .2s;
+}
+.reko-item:hover { background:rgba(201,168,76,.05); }
+.reko-item:active { background:rgba(201,168,76,.1); }
+.reko-thumb { width:58px; height:78px; border-radius:7px; overflow:hidden; flex-shrink:0; background:var(--bg3); border:1px solid rgba(201,168,76,.12); }
+.reko-thumb img { width:100%; height:100%; object-fit:cover; }
+.reko-info { flex:1; }
+.reko-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.reko-meta { font-size:11px; color:var(--text-dim); }
+.chevron svg { width:14px; height:14px; stroke:var(--text-dim); fill:none; stroke-width:2; }
+
+/* SKELETON */
+.skeleton { background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
+@keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+/* PLAYER PAGE */
+.player-header { padding:64px 18px 12px; display:flex; align-items:center; gap:10px; }
+.back-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.07); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.back-btn svg { width:16px; height:16px; stroke:var(--text); fill:none; stroke-width:2; }
+.player-header-title { font-size:14px; font-weight:600; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.player-wrap { width:100%; aspect-ratio:16/9; background:#000; position:relative; }
+.player-wrap video, .player-wrap iframe { width:100%; height:100%; display:block; }
+.player-loading {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:#000; flex-direction:column; gap:12px;
+}
+.spinner { width:36px; height:36px; border:3px solid rgba(201,168,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+.player-body { padding:16px 18px; }
+.player-title { font-family:'Cinzel',serif; font-size:17px; font-weight:700; margin-bottom:8px; line-height:1.3; }
+.player-meta { font-size:11px; color:var(--text-dim); margin-bottom:14px; display:flex; gap:8px; flex-wrap:wrap; }
+
+.quality-row { display:flex; gap:7px; margin-bottom:14px; }
+.q-pill {
+  padding:5px 11px; border-radius:6px; font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid rgba(201,168,76,.25);
+  background:transparent; color:var(--text-dim); transition:all .2s;
+}
+.q-pill.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); }
+
+.divider { height:1px; background:rgba(255,255,255,.05); margin:14px 0; }
+
+/* SEARCH PAGE */
+.search-top { padding:68px 18px 14px; }
+.search-wrap { position:relative; }
+.search-big {
+  width:100%; background:var(--bg3); border:1px solid rgba(201,168,76,.2);
+  border-radius:12px; padding:13px 16px 13px 42px; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .3s;
+}
+.search-big:focus { border-color:var(--gold); }
+.search-big::placeholder { color:var(--text-dim); }
+.search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); }
+.search-icon svg { width:16px; height:16px; stroke:var(--text-dim); fill:none; stroke-width:2; }
+.search-results { padding:0 18px; }
+.search-empty { text-align:center; padding:50px 0; color:var(--text-dim); }
+.search-empty svg { width:44px; height:44px; stroke:currentColor; fill:none; stroke-width:1; opacity:.3; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto; }
+.search-item {
+  display:flex; gap:12px; align-items:center;
+  padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer;
+  transition:opacity .2s;
+}
+.search-item:active { opacity:.7; }
+.search-item-thumb { width:48px; height:66px; border-radius:6px; overflow:hidden; flex-shrink:0; background:var(--bg3); }
+.search-item-thumb img { width:100%; height:100%; object-fit:cover; }
+.search-item-info .title { font-size:13px; font-weight:600; margin-bottom:4px; line-height:1.3; }
+.search-item-info .meta { font-size:11px; color:var(--text-dim); }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  display:flex; background:rgba(10,10,10,.96);
+  border-top:1px solid rgba(201,168,76,.08);
+  backdrop-filter:blur(14px);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:9px 0; cursor:pointer; gap:3px; transition:opacity .2s; }
+.nav-item:active { opacity:.7; }
+.nav-item svg { width:20px; height:20px; stroke:var(--text-dim); fill:none; stroke-width:1.7; transition:stroke .2s; }
+.nav-item span { font-size:9px; color:var(--text-dim); transition:color .2s; letter-spacing:.3px; }
+.nav-item.active svg { stroke:var(--gold); }
+.nav-item.active span { color:var(--gold); font-weight:600; }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:85px; left:50%; transform:translateX(-50%) translateY(12px);
+  background:var(--bg4); border:1px solid rgba(201,168,76,.25);
+  color:var(--text); padding:9px 18px; border-radius:20px;
+  font-size:12px; opacity:0; pointer-events:none; transition:all .28s; z-index:300; white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ERROR STATE */
+.error-state { text-align:center; padding:40px 20px; color:var(--text-dim); }
+.error-state p { font-size:13px; margin-top:8px; }
+.retry-btn { margin-top:14px; padding:9px 20px; border-radius:20px; border:1px solid var(--gold); background:transparent; color:var(--gold); font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="goPage('home')">Indo<span>Stream</span></div>
+  <div class="nav-right">
+    <div class="nav-search-wrap">
+      <div class="nav-search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <input class="nav-search" type="text" placeholder="Cari..." id="navSearch" oninput="navSearchHandler(this.value)">
+    </div>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== HOME ===== -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <div class="hero" id="heroSection">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content" id="heroContent">
+      <div class="hero-poster skeleton" style="width:105px;aspect-ratio:2/3;border-radius:10px;"></div>
+      <div style="flex:1">
+        <div class="skeleton" style="height:14px;width:60px;margin-bottom:10px;border-radius:20px;"></div>
+        <div class="skeleton" style="height:26px;width:90%;margin-bottom:8px;"></div>
+        <div class="skeleton" style="height:12px;width:70%;margin-bottom:20px;"></div>
+        <div class="skeleton" style="height:44px;border-radius:10px;margin-bottom:9px;"></div>
+        <div class="skeleton" style="height:44px;border-radius:10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHIPS -->
+  <div class="section" style="padding-bottom:0">
+    <div class="chips">
+      <div class="chip active" onclick="filterCat(this,'all')">Semua</div>
+      <div class="chip" onclick="filterCat(this,'5')">Anime Series</div>
+      <div class="chip" onclick="filterCat(this,'4')">Anime Movie</div>
+      <div class="chip" onclick="filterCat(this,'3')">TV Series</div>
+      <div class="chip" onclick="filterCat(this,'1')">Film Movie</div>
+    </div>
+  </div>
+
+  <!-- LATEST -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Terbaru</span>
+      <div class="section-line"></div>
+      <a class="see-all" onclick="loadMore()">Lihat Semua</a>
+    </div>
+    <div class="card-scroll" id="latestCards">
+      ${[...Array(5)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div><div class="skeleton" style="height:9px;margin-top:4px;width:70%"></div></div>`).join('')}
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Trending</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="card-scroll" id="trendingCards">
+      ${[...Array(4)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div></div>`).join('')}
+    </div>
+  </div>
+
+  <!-- REKOMENDASI -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Rekomendasi</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="reko-list" id="rekoList">
+      ${[...Array(4)].map(()=>`<div class="reko-item"><div class="reko-thumb skeleton"></div><div style="flex:1"><div class="skeleton" style="height:13px;margin-bottom:6px"></div><div class="skeleton" style="height:10px;width:60%"></div></div></div>`).join('')}
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== PLAYER ===== -->
+<div class="page" id="page-player">
+  <div class="player-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
+    </button>
+    <div class="player-header-title" id="playerHeaderTitle">Loading...</div>
+  </div>
+  <div class="player-wrap">
+    <div class="player-loading" id="playerLoading">
+      <div class="spinner"></div>
+      <span style="font-size:12px;color:var(--text-dim)">Memuat video...</span>
+    </div>
+    <video id="playerVideo" controls playsinline style="display:none"></video>
+  </div>
+  <div class="player-body">
+    <h2 class="player-title" id="playerTitle"></h2>
+    <div class="player-meta" id="playerMeta"></div>
+    <div class="quality-row" id="qualityRow"></div>
+    <div class="divider"></div>
+    <div class="section-title" style="margin-bottom:12px">Lainnya</div>
+    <div class="reko-list" id="playerNext"></div>
+  </div>
+</div>
+
+<!-- ===== SEARCH ===== -->
+<div class="page" id="page-search">
+  <div class="search-top">
+    <div class="search-wrap">
+      <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <input class="search-big" type="text" placeholder="Cari anime, kartun, film..." id="searchInput" oninput="doSearch(this.value)">
+    </div>
+  </div>
+  <div class="search-results" id="searchResults">
+    <div class="search-empty">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <p>Ketik untuk mulai pencarian</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="goPage('home')">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" id="nav-search" onclick="goPage('search')">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span>Cari</span>
+  </div>
+  <div class="nav-item" id="nav-bookmark" onclick="showToast('Coming soon!')">
+    <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <span>Simpan</span>
+  </div>
+  <div class="nav-item" id="nav-profile" onclick="showToast('Coming soon!')">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Profil</span>
+  </div>
+</div>
+
+<script>
+// ===== CONFIG =====
+// Ganti dengan domain Vercel lu setelah deploy
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? ''  // local: relative path
+  : '';  // production: '' = same domain (Vercel)
+
+// ===== STATE =====
+let currentPage = 'home';
+let pageStack = [];
+let currentCat = 'all';
+let currentSources = [];
+let currentQuality = 0;
+let heroVideos = [];
+let heroIndex = 0;
+let searchTimeout = null;
+let latestVideos = [];
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', async () => {
+  await Promise.all([
+    fetchLatest('all'),
+    fetchTrending(),
+  ]);
+});
+
+// ===== FETCH LATEST =====
+async function fetchLatest(cat = 'all') {
+  try {
+    const res = await fetch(`${API}/api/latest?category=${cat}&page=1`);
+    const data = await res.json();
+
+    if (!data.videos || data.videos.length === 0) {
+      document.getElementById('latestCards').innerHTML = errorCard('Gagal memuat konten');
+      return;
+    }
+
+    latestVideos = data.videos;
+    renderCards('latestCards', data.videos);
+
+    // Set hero to first video
+    if (cat === 'all' && data.videos.length > 0) {
+      heroVideos = data.videos.slice(0, 5);
+      renderHero(heroVideos[0]);
+      startHeroRotation();
+    }
+  } catch (e) {
+    document.getElementById('latestCards').innerHTML = errorCard('Koneksi gagal. Coba lagi.');
+  }
+}
+
+async function fetchTrending() {
+  try {
+    const res = await fetch(`${API}/api/latest?category=all&page=2`);
+    const data = await res.json();
+    if (data.videos) renderCards('trendingCards', data.videos.slice(0, 8));
+    renderReko(data.videos ? data.videos.slice(0, 6) : []);
+  } catch (e) {
+    document.getElementById('trendingCards').innerHTML = errorCard('Gagal memuat');
+  }
+}
+
+// ===== HERO =====
+function renderHero(v) {
+  const bg = document.getElementById('heroBg');
+  bg.style.backgroundImage = `url('${v.thumb}')`;
+
+  document.getElementById('heroContent').innerHTML = `
+    <div class="hero-poster">
+      <img src="${v.thumb}" alt="${esc(v.title)}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\'/>'">
+    </div>
+    <div class="hero-info">
+      <div class="badge ongoing">${v.catName}</div>
+      <h1 class="hero-title">${esc(v.title)}</h1>
+      <div class="hero-meta">
+        <span>Dubbing Indonesia</span>
+        <span class="dot">·</span>
+        <span>${v.date || '2026'}</span>
+        <span class="dot">·</span>
+        <span>${v.views} views</span>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          Tonton Sekarang
+        </button>
+        <button class="btn btn-secondary" onclick="showToast('✓ Ditambahkan ke Bookmark')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Bookmark
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function startHeroRotation() {
+  if (heroVideos.length < 2) return;
+  setInterval(() => {
+    heroIndex = (heroIndex + 1) % heroVideos.length;
+    renderHero(heroVideos[heroIndex]);
+  }, 6000);
+}
+
+// ===== RENDER CARDS =====
+function renderCards(containerId, videos) {
+  const el = document.getElementById(containerId);
+  if (!videos || videos.length === 0) { el.innerHTML = errorCard('Tidak ada konten'); return; }
+  el.innerHTML = videos.map(v => `
+    <div class="card" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+      <div class="card-thumb">
+        <img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
+        <div class="card-badge">${v.catName}</div>
+      </div>
+      <div class="card-title">${esc(v.title)}</div>
+      <div class="card-sub">${v.views} views · ${v.date}</div>
+    </div>
+  `).join('');
+}
+
+function renderReko(videos) {
+  const el = document.getElementById('rekoList');
+  if (!videos || videos.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = videos.map(v => `
+    <div class="reko-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+      <div class="reko-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
+      <div class="reko-info">
+        <div class="reko-title">${esc(v.title)}</div>
+        <div class="reko-meta">${v.catName} · ${v.date}</div>
+      </div>
+      <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
+    </div>
+  `).join('');
+}
+
+// ===== PLAYER =====
+async function openPlayer(videoId, title, thumb) {
+  // Set page
+  document.getElementById('playerHeaderTitle').textContent = title;
+  document.getElementById('playerTitle').textContent = title;
+  document.getElementById('playerMeta').textContent = 'Dubbing Indonesia · IndoStream';
+  document.getElementById('playerLoading').style.display = 'flex';
+  document.getElementById('playerVideo').style.display = 'none';
+  document.getElementById('qualityRow').innerHTML = '';
+  document.getElementById('playerNext').innerHTML = '';
+
+  pageStack.push(currentPage);
+  goPage('player');
+  window.scrollTo(0, 0);
+
+  // Fetch embed data
+  try {
+    const res = await fetch(`${API}/api/embed?id=${videoId}`);
+    const data = await res.json();
+
+    if (!data.sources || data.sources.length === 0) {
+      document.getElementById('playerLoading').innerHTML = `<p style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px">Gagal memuat video.<br>Coba lagi nanti.</p>`;
+      return;
+    }
+
+    currentSources = data.sources;
+    currentQuality = 0;
+
+    // Update title if available
+    if (data.title) {
+      document.getElementById('playerTitle').textContent = data.title;
+      document.getElementById('playerHeaderTitle').textContent = data.title;
+    }
+
+    // Render quality pills
+    document.getElementById('qualityRow').innerHTML = data.sources.map((s, i) => `
+      <div class="q-pill ${i===0?'active':''}" onclick="switchQuality(${i}, this)">${s.quality}</div>
+    `).join('');
+
+    // Play video
+    playSource(0);
+
+    // Load next videos
+    loadNextVideos(videoId);
+
+  } catch (e) {
+    document.getElementById('playerLoading').innerHTML = `<p style="color:var(--text-dim);font-size:13px;padding:20px;text-align:center">Error: ${e.message}</p>`;
+  }
+}
+
+function playSource(index) {
+  const video = document.getElementById('playerVideo');
+  const loading = document.getElementById('playerLoading');
+  const src = currentSources[index].url;
+
+  video.style.display = 'none';
+  loading.style.display = 'flex';
+  loading.innerHTML = `<div class="spinner"></div><span style="font-size:12px;color:var(--text-dim)">Memuat ${currentSources[index].quality}...</span>`;
+
+  video.src = src;
+  video.load();
+  video.oncanplay = () => {
+    loading.style.display = 'none';
+    video.style.display = 'block';
+    video.play().catch(()=>{});
+  };
+  video.onerror = () => {
+    loading.innerHTML = `<p style="color:var(--text-dim);font-size:12px;text-align:center;padding:20px">Gagal memuat ${currentSources[index].quality}.<br>Coba kualitas lain.</p>`;
+  };
+}
+
+function switchQuality(index, el) {
+  document.querySelectorAll('.q-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const currentTime = document.getElementById('playerVideo').currentTime;
+  currentQuality = index;
+  playSource(index);
+  document.getElementById('playerVideo').addEventListener('canplay', () => {
+    document.getElementById('playerVideo').currentTime = currentTime;
+  }, { once: true });
+}
+
+async function loadNextVideos(currentId) {
+  try {
+    const res = await fetch(`${API}/api/latest?category=all&page=1`);
+    const data = await res.json();
+    const others = (data.videos || []).filter(v => v.id !== currentId).slice(0, 5);
+    document.getElementById('playerNext').innerHTML = others.map(v => `
+      <div class="reko-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+        <div class="reko-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
+        <div class="reko-info">
+          <div class="reko-title">${esc(v.title)}</div>
+          <div class="reko-meta">${v.catName} · ${v.date}</div>
+        </div>
+        <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+// ===== SEARCH =====
+let searchAbort = null;
+
+function doSearch(q) {
+  clearTimeout(searchTimeout);
+  const container = document.getElementById('searchResults');
+
+  if (!q.trim()) {
+    container.innerHTML = `<div class="search-empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Ketik untuk mulai pencarian</p></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="search-empty"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:12px">Mencari "${q}"...</p></div>`;
+
+  searchTimeout = setTimeout(async () => {
+    try {
+      const res = await fetch(`${API}/api/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+
+      if (!data.videos || data.videos.length === 0) {
+        container.innerHTML = `<div class="search-empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Tidak ditemukan untuk "<b>${esc(q)}</b>"</p></div>`;
+        return;
+      }
+
+      container.innerHTML = data.videos.map(v => `
+        <div class="search-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+          <div class="search-item-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
+          <div class="search-item-info">
+            <div class="title">${esc(v.title)}</div>
+            <div class="meta">${v.catName} · ${v.date} · ${v.views} views</div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      container.innerHTML = `<div class="search-empty"><p>Gagal mencari. Cek koneksi internet.</p></div>`;
+    }
+  }, 500);
+}
+
+// ===== NAVIGATION =====
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  currentPage = name;
+}
+
+function goBack() {
+  const prev = pageStack.pop();
+  if (prev) {
+    const video = document.getElementById('playerVideo');
+    video.pause();
+    video.src = '';
+    goPage(prev);
+  } else {
+    goPage('home');
+  }
+}
+
+function filterCat(el, cat) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentCat = cat;
+  document.getElementById('latestCards').innerHTML = [...Array(5)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div></div>`).join('');
+  fetchLatest(cat);
+}
+
+function loadMore() {
+  showToast('Memuat lebih banyak...');
+  fetch(`${API}/api/latest?category=${currentCat}&page=2`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.videos && data.videos.length > 0) {
+        const container = document.getElementById('latestCards');
+        container.innerHTML += data.videos.map(v => `
+          <div class="card" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+            <div class="card-thumb">
+              <img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy">
+              <div class="card-badge">${v.catName}</div>
+            </div>
+            <div class="card-title">${esc(v.title)}</div>
+            <div class="card-sub">${v.views} views · ${v.date}</div>
+          </div>
+        `).join('');
+        showToast(`+${data.videos.length} konten dimuat`);
+      }
+    }).catch(() => showToast('Gagal memuat'));
+}
+
+function navSearchHandler(val) {
+  if (val.length > 0) {
+    goPage('search');
+    document.getElementById('searchInput').value = val;
+    doSearch(val);
+  }
+}
+
+// ===== UTILS =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2300);
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function errorCard(msg) {
+  return `<div style="padding:20px;color:var(--text-dim);font-size:13px;text-align:center">${msg}</div>`;
+}
+</script>
+</body>
+</html>
