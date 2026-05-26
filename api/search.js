@@ -28,26 +28,22 @@ function parseVideos(html) {
     seenIds.add(videoId);
 
     const start = Math.max(0, match.index - 800);
-    const ctx = html.slice(start, match.index + fullUrl.length + 300);
+    const ctx = html.slice(start, match.index + fullUrl.length + 400);
 
-    const thumbMatch = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/photos\/[^"]+)"/);
+    const thumbMatch = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/[^"]+)"/);
     const thumb = thumbMatch ? thumbMatch[1] : '';
 
-    const titleH4Match = ctx.match(/title="([^"]{3,150})"/);
-    const titleAltMatch = ctx.match(/alt="([^"]{3,150})"/);
-    let title = '';
-    if (titleH4Match) title = titleH4Match[1];
-    else if (titleAltMatch) title = titleAltMatch[1];
-    else title = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const titleMatch = ctx.match(/title="([^"]{3,150})"/) || ctx.match(/alt="([^"]{3,150})"/);
+    const title = titleMatch ? titleMatch[1] : slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
-    const viewsMatch = ctx.match(/(\d[\d.,]*)\s*Views?/i);
+    const viewsMatch = ctx.match(/<span>(\d[\d.,]*)\s*Views?<\/span>/i);
     const views = viewsMatch ? viewsMatch[1] : '0';
 
-    const durationMatch = ctx.match(/class="video-duration">([^<]+)<\/div>/);
-    const duration = durationMatch ? durationMatch[1].trim() : '';
+    const timeMatch = ctx.match(/<span>([^<]*(?:second|minute|hour|day|week|month|year|ago)[^<]*)<\/span>/i);
+    const date = timeMatch ? timeMatch[1].trim() : '2026';
 
     if (videoId && title) {
-      videos.push({ id: videoId, title, thumb, views, duration, url: fullUrl });
+      videos.push({ id: videoId, title, thumb, views, date, catName: 'Dubbing Indonesia', url: fullUrl });
     }
   }
 
@@ -62,7 +58,6 @@ export default async function handler(req, res) {
     const url = `${BASE}/search?keyword=${encodeURIComponent(q)}&page_id=${page}`;
     const html = await fetchPage(url);
     const videos = parseVideos(html);
-
     res.status(200).json({ status: 200, query: q, page: parseInt(page), total: videos.length, videos });
   } catch (err) {
     res.status(500).json({ status: 500, error: err.message, videos: [] });
