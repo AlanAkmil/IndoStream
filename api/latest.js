@@ -1,7 +1,5 @@
 // api/latest.js
-// Scrape latest videos dari dubbindo.site
-
-const BASE = 'https://uvideo.xyz';
+const BASE = 'https://www.dubbindo.site';
 
 const CATEGORY_MAP = {
   '1': 'Film Movie',
@@ -25,18 +23,8 @@ async function fetchPage(url) {
 
 function parseVideos(html) {
   const videos = [];
-
-  // Match each video item block
-  const itemRegex = /<div[^>]+class="[^"]*video-item[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/g;
-  const thumbRegex = /<img[^>]+src="([^"]+)"/;
-  const titleRegex = /<h[23][^>]*>\s*<a[^>]*>([^<]+)<\/a>/;
-  const linkRegex = /href="([^"]+\/watch\/[^"]+)"/;
-  const categoryRegex = /\/videos\/category\/(\d+)/;
-  const viewsRegex = /(\d[\d.,]*)\s*(?:views?|x ditonton)/i;
-  const dateRegex = /(\d{2}\/\d{2}\/\d{2,4}|\d{4}-\d{2}-\d{2})/;
-
-  // Alternative: parse anchor tags with watch URLs
-  const watchRegex = /href="(https?:\/\/(?:www\.)?uvideo\.xyz\/watch\/([^"]+)_([a-zA-Z0-9]+)\.html)"/g;
+  // Match watch URLs: /watch/slug_ID.html
+  const watchRegex = /href="(https?:\/\/www\.dubbindo\.site\/watch\/([^"]+)_([a-zA-Z0-9]+)\.html)"/g;
   const seenIds = new Set();
 
   let match;
@@ -48,37 +36,31 @@ function parseVideos(html) {
     if (seenIds.has(videoId)) continue;
     seenIds.add(videoId);
 
-    // Get surrounding context (500 chars before the match)
-    const start = Math.max(0, match.index - 600);
-    const ctx = html.slice(start, match.index + fullUrl.length + 200);
+    const start = Math.max(0, match.index - 800);
+    const ctx = html.slice(start, match.index + fullUrl.length + 300);
 
-    // Extract thumbnail
+    // Thumbnail from s3.dubbindo.my.id
     const thumbMatch = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/photos\/[^"]+)"/);
     const thumb = thumbMatch ? thumbMatch[1] : '';
 
-    // Extract title from title="" or alt="" or anchor text
-    const titleAttrMatch = ctx.match(/(?:title|alt)="([^"]{5,100})"/);
-    const anchorTextMatch = ctx.match(/<a[^>]*href="[^"]*watch[^"]*"[^>]*>\s*([^<]{5,100})\s*<\/a>/);
+    // Title from h4 title attribute or alt attribute
+    const titleH4Match = ctx.match(/title="([^"]{3,150})"/);
+    const titleAltMatch = ctx.match(/alt="([^"]{3,150})"/);
     let title = '';
-    if (titleAttrMatch) title = titleAttrMatch[1];
-    else if (anchorTextMatch) title = anchorTextMatch[1].trim();
+    if (titleH4Match) title = titleH4Match[1];
+    else if (titleAltMatch) title = titleAltMatch[1];
     else title = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
-    // Extract category
-    const catMatch = ctx.match(/\/videos\/category\/(\d+)/);
-    const catId = catMatch ? catMatch[1] : '0';
-    const catName = CATEGORY_MAP[catId] || 'Video';
-
-    // Extract views
-    const viewsMatch = ctx.match(/(\d[\d.,]*)\s*x\s*ditonton/i) || ctx.match(/(\d[\d.,]*)\s*views/i);
+    // Views
+    const viewsMatch = ctx.match(/(\d[\d.,]*)\s*Views?/i);
     const views = viewsMatch ? viewsMatch[1] : '0';
 
-    // Extract date
-    const dateMatch = ctx.match(/(\d{2}\/\d{2}\/\d{2,4})/);
-    const date = dateMatch ? dateMatch[1] : '';
+    // Duration
+    const durationMatch = ctx.match(/class="video-duration">([^<]+)<\/div>/);
+    const duration = durationMatch ? durationMatch[1].trim() : '';
 
     if (videoId && title) {
-      videos.push({ id: videoId, title, thumb, catId, catName, views, date, url: fullUrl });
+      videos.push({ id: videoId, title, thumb, views, duration, url: fullUrl });
     }
   }
 
@@ -91,23 +73,24 @@ export default async function handler(req, res) {
   try {
     let url;
     if (category === 'all') {
-      url = `${BASE}/videos/latest?page=${page}`;
+      url = `${BASE}/videos/latest?page_id=${page}`;
     } else {
-      url = `${BASE}/videos/category/${category}?page=${page}`;
+      url = `${BASE}/videos/category/${category}?page_id=${page}`;
     }
 
     const html = await fetchPage(url);
     const videos = parseVideos(html);
 
-    // Also try to get pagination info
-    const totalMatch = html.match(/Total[^:]*:\s*(\d+)/i);
-    const total = totalMatch ? parseInt(totalMatch[1]) : videos.length;
+    // Pagination
+    const totalPagesMatch = html.match(/page_id=(\d+)[^"]*"[^>]*>[^<]*<\/a>\s*<\/li>\s*<li>\s*<a[^>]*title='Last Page'/);
+    const totalPages = totalPagesMatch ? parseInt(totalPagesMatch[1]) : 1;
 
     res.status(200).json({
       status: 200,
       page: parseInt(page),
       category,
-      total,
+      total: videos.length,
+      totalPages,
       videos,
     });
   } catch (err) {
