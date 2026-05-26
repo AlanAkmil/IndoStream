@@ -396,10 +396,7 @@ nav {
 
 <script>
 // ===== CONFIG =====
-// Ganti dengan domain Vercel lu setelah deploy
-const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? ''  // local: relative path
-  : '';  // production: '' = same domain (Vercel)
+const API = '';
 
 // ===== STATE =====
 let currentPage = 'home';
@@ -411,6 +408,28 @@ let heroVideos = [];
 let heroIndex = 0;
 let searchTimeout = null;
 let latestVideos = [];
+
+// ===== UTILS =====
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function errorCard(msg) {
+  return `<div style="padding:20px;color:var(--text-dim);font-size:13px;text-align:center">${msg}</div>`;
+}
+
+// ✅ FIX: proxy semua gambar lewat /api/image biar bypass hotlink protection
+function proxyImg(url) {
+  if (!url) return '';
+  return `/api/image?url=${encodeURIComponent(url)}`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2300);
+}
 
 // ===== INIT =====
 window.addEventListener('DOMContentLoaded', async () => {
@@ -434,7 +453,6 @@ async function fetchLatest(cat = 'all') {
     latestVideos = data.videos;
     renderCards('latestCards', data.videos);
 
-    // Set hero to first video
     if (cat === 'all' && data.videos.length > 0) {
       heroVideos = data.videos.slice(0, 5);
       renderHero(heroVideos[0]);
@@ -459,14 +477,15 @@ async function fetchTrending() {
 // ===== HERO =====
 function renderHero(v) {
   const bg = document.getElementById('heroBg');
-  bg.style.backgroundImage = `url('${v.thumb}')`;
+  // ✅ FIX: pakai proxyImg untuk background hero juga
+  bg.style.backgroundImage = `url('${proxyImg(v.thumb)}')`;
 
   document.getElementById('heroContent').innerHTML = `
     <div class="hero-poster">
-      <img src="${v.thumb}" alt="${esc(v.title)}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\'/>'">
+      <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\'/>'">
     </div>
     <div class="hero-info">
-      <div class="badge ongoing">${v.catName}</div>
+      <div class="badge ongoing">${esc(v.catName)}</div>
       <h1 class="hero-title">${esc(v.title)}</h1>
       <div class="hero-meta">
         <span>Dubbing Indonesia</span>
@@ -476,7 +495,7 @@ function renderHero(v) {
         <span>${v.views} views</span>
       </div>
       <div class="btn-group">
-        <button class="btn btn-primary" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+        <button class="btn btn-primary" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
           Tonton Sekarang
         </button>
@@ -502,10 +521,10 @@ function renderCards(containerId, videos) {
   const el = document.getElementById(containerId);
   if (!videos || videos.length === 0) { el.innerHTML = errorCard('Tidak ada konten'); return; }
   el.innerHTML = videos.map(v => `
-    <div class="card" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+    <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
       <div class="card-thumb">
-        <img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
-        <div class="card-badge">${v.catName}</div>
+        <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
+        <div class="card-badge">${esc(v.catName)}</div>
       </div>
       <div class="card-title">${esc(v.title)}</div>
       <div class="card-sub">${v.views} views · ${v.date}</div>
@@ -517,11 +536,11 @@ function renderReko(videos) {
   const el = document.getElementById('rekoList');
   if (!videos || videos.length === 0) { el.innerHTML = ''; return; }
   el.innerHTML = videos.map(v => `
-    <div class="reko-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
-      <div class="reko-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
+    <div class="reko-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+      <div class="reko-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
       <div class="reko-info">
         <div class="reko-title">${esc(v.title)}</div>
-        <div class="reko-meta">${v.catName} · ${v.date}</div>
+        <div class="reko-meta">${esc(v.catName)} · ${v.date}</div>
       </div>
       <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
     </div>
@@ -542,7 +561,6 @@ async function openPlayer(videoId, title, thumb) {
   goPage('player');
   window.scrollTo(0, 0);
 
-  // Extract shortcode from full slug: "love-100-c-2010_7cYjL6VhWiZT4C6.html" -> "7cYjL6VhWiZT4C6"
   const shortCode = videoId.replace(/\.html$/, '').split('_').pop();
   const embedUrl = `https://www.dubbindo.site/embed/${shortCode}`;
 
@@ -556,7 +574,6 @@ async function openPlayer(videoId, title, thumb) {
     document.getElementById('playerLoading').innerHTML = `<p style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px">Gagal memuat video.<br>Coba lagi nanti.</p>`;
   };
 
-  // Timeout fallback
   setTimeout(() => {
     if (document.getElementById('playerLoading').style.display !== 'none') {
       document.getElementById('playerLoading').style.display = 'none';
@@ -567,20 +584,17 @@ async function openPlayer(videoId, title, thumb) {
   loadNextVideos(videoId);
 }
 
-function playSource(index) { /* not used - iframe player */ }
-function switchQuality(index, el) { /* not used - iframe player */ }
-
 async function loadNextVideos(currentId) {
   try {
     const res = await fetch(`${API}/api/latest?category=all&page=1`);
     const data = await res.json();
     const others = (data.videos || []).filter(v => v.id !== currentId).slice(0, 5);
     document.getElementById('playerNext').innerHTML = others.map(v => `
-      <div class="reko-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
-        <div class="reko-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
+      <div class="reko-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+        <div class="reko-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
         <div class="reko-info">
           <div class="reko-title">${esc(v.title)}</div>
-          <div class="reko-meta">${v.catName} · ${v.date}</div>
+          <div class="reko-meta">${esc(v.catName)} · ${v.date}</div>
         </div>
         <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
       </div>
@@ -589,8 +603,6 @@ async function loadNextVideos(currentId) {
 }
 
 // ===== SEARCH =====
-let searchAbort = null;
-
 function doSearch(q) {
   clearTimeout(searchTimeout);
   const container = document.getElementById('searchResults');
@@ -600,7 +612,7 @@ function doSearch(q) {
     return;
   }
 
-  container.innerHTML = `<div class="search-empty"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:12px">Mencari "${q}"...</p></div>`;
+  container.innerHTML = `<div class="search-empty"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:12px">Mencari "${esc(q)}"...</p></div>`;
 
   searchTimeout = setTimeout(async () => {
     try {
@@ -613,11 +625,11 @@ function doSearch(q) {
       }
 
       container.innerHTML = data.videos.map(v => `
-        <div class="search-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
-          <div class="search-item-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
+        <div class="search-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+          <div class="search-item-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
           <div class="search-item-info">
             <div class="title">${esc(v.title)}</div>
-            <div class="meta">${v.catName} · ${v.date} · ${v.views} views</div>
+            <div class="meta">${esc(v.catName)} · ${v.date} · ${v.views} views</div>
           </div>
         </div>
       `).join('');
@@ -664,10 +676,10 @@ function loadMore() {
       if (data.videos && data.videos.length > 0) {
         const container = document.getElementById('latestCards');
         container.innerHTML += data.videos.map(v => `
-          <div class="card" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+          <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
             <div class="card-thumb">
-              <img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy">
-              <div class="card-badge">${v.catName}</div>
+              <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
+              <div class="card-badge">${esc(v.catName)}</div>
             </div>
             <div class="card-title">${esc(v.title)}</div>
             <div class="card-sub">${v.views} views · ${v.date}</div>
@@ -684,22 +696,6 @@ function navSearchHandler(val) {
     document.getElementById('searchInput').value = val;
     doSearch(val);
   }
-}
-
-// ===== UTILS =====
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2300);
-}
-
-function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-}
-
-function errorCard(msg) {
-  return `<div style="padding:20px;color:var(--text-dim);font-size:13px;text-align:center">${msg}</div>`;
 }
 </script>
 </body>
