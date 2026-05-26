@@ -15,26 +15,23 @@ async function fetchPage(url) {
 
 function parseVideos(html) {
   const videos = [];
-  const watchRegex = /href="(https?:\/\/www\.dubbindo\.site\/watch\/([^"]+)_([a-zA-Z0-9]+)\.html)"/g;
+  const watchRegex = /href="https?:\/\/www\.dubbindo\.site\/watch\/([^"]+\.html)"/g;
   const seenIds = new Set();
 
   let match;
   while ((match = watchRegex.exec(html)) !== null) {
-    const fullUrl = match[1];
-    const slug = match[2];
-    const videoId = match[3];
-
-    if (seenIds.has(videoId)) continue;
-    seenIds.add(videoId);
+    const fullSlug = match[1];
+    if (seenIds.has(fullSlug)) continue;
+    seenIds.add(fullSlug);
 
     const start = Math.max(0, match.index - 800);
-    const ctx = html.slice(start, match.index + fullUrl.length + 400);
+    const ctx = html.slice(start, match.index + fullSlug.length + 400);
 
     const thumbMatch = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/[^"]+)"/);
     const thumb = thumbMatch ? thumbMatch[1] : '';
 
     const titleMatch = ctx.match(/title="([^"]{3,150})"/) || ctx.match(/alt="([^"]{3,150})"/);
-    const title = titleMatch ? titleMatch[1] : slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const title = titleMatch ? titleMatch[1].replace(/^⁣/, '').trim() : fullSlug.replace(/_[^_]+\.html$/, '').replace(/-/g, ' ');
 
     const viewsMatch = ctx.match(/<span>(\d[\d.,]*)\s*Views?<\/span>/i);
     const views = viewsMatch ? viewsMatch[1] : '0';
@@ -42,8 +39,8 @@ function parseVideos(html) {
     const timeMatch = ctx.match(/<span>([^<]*(?:second|minute|hour|day|week|month|year|ago)[^<]*)<\/span>/i);
     const date = timeMatch ? timeMatch[1].trim() : '2026';
 
-    if (videoId && title) {
-      videos.push({ id: videoId, title, thumb, views, date, catName: 'Dubbing Indonesia', url: fullUrl });
+    if (title) {
+      videos.push({ id: fullSlug, title, thumb, views, date, catName: 'Dubbing Indonesia' });
     }
   }
 
