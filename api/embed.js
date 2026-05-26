@@ -5,7 +5,33 @@ export default async function handler(req, res) {
   if (!id) return res.status(400).json({ status: 400, error: 'ID required' });
 
   try {
-    const url = `${BASE}/watch/${id}`;
+    // id bisa berupa full slug (love-100-c-2010_7cYjL6VhWiZT4C6.html) atau cuma shortcode (7cYjL6VhWiZT4C6)
+    let watchPath = id;
+    if (!id.includes('_') && !id.endsWith('.html')) {
+      // shortcode only - coba embed page dulu
+      const embedUrl = `${BASE}/embed/${id}`;
+      const embedRes = await fetch(embedUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Referer': BASE,
+        },
+      });
+      if (embedRes.ok) {
+        const embedHtml = await embedRes.text();
+        const sources = parseSourceTags(embedHtml);
+        if (sources.length > 0) {
+          const titleMatch = embedHtml.match(/<title>([^<]+)<\/title>/);
+          const title = titleMatch ? titleMatch[1].replace(/\s*\|.*$/, '').trim() : '';
+          return res.status(200).json({ status: 200, id, title, sources });
+        }
+      }
+    }
+
+    // Fetch watch page
+    const url = id.endsWith('.html')
+      ? `${BASE}/watch/${id}`
+      : `${BASE}/watch/${id}`;
+
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -20,37 +46,47 @@ export default async function handler(req, res) {
     const titleMatch = html.match(/<title>([^<]+)<\/title>/);
     const title = titleMatch ? titleMatch[1].replace(/\s*\|.*$/, '').trim() : '';
 
-    const sources = [];
+    // Parse <source> tags dengan data-quality / label / res
+    const sources = parseSourceTags(html);
 
-    // Match MP4 sources from video player config
-    const mp4Regex = /["']?file["']?\s*:\s*["']([^"']+\.mp4[^"']*)/gi;
+    if (sources.length > 0) {
+      return res.status(200).json({ status: 200, id, title, sources });
+    }
+
+    // Fallback: cari di updateSrc JS
+    const updateSrcRegex = /src:\s*'(https?:\/\/[^']+\.mp4[^']*)'.+?label:\s*'([^']+)'/gs;
     let m;
     const seenUrls = new Set();
-    while ((m = mp4Regex.exec(html)) !== null) {
-      if (!seenUrls.has(m[1])) {
-        seenUrls.add(m[1]);
-        const labelMatch = html.slice(Math.max(0, m.index - 100), m.index).match(/["']?label["']?\s*:\s*["']([^"']+)/i);
-        sources.push({ quality: labelMatch ? labelMatch[1] : `Kualitas ${sources.length + 1}`, url: m[1] });
+    while ((m = updateSrcRegex.exec(html)) !== null) {
+      const url2 = m[1];
+      if (!seenUrls.has(url2)) {
+        seenUrls.add(url2);
+        sources.push({ quality: m[2], url: url2 });
       }
-    }
-
-    // Match HLS/m3u8
-    const hlsRegex = /["']?file["']?\s*:\s*["']([^"']+\.m3u8[^"']*)/gi;
-    while ((m = hlsRegex.exec(html)) !== null) {
-      if (!seenUrls.has(m[1])) {
-        seenUrls.add(m[1]);
-        sources.push({ quality: 'Auto (HLS)', url: m[1] });
-      }
-    }
-
-    // Match iframe embed
-    const iframeMatch = html.match(/<iframe[^>]+src="([^"]+)"[^>]*(allow|allowfullscreen)/i);
-    if (iframeMatch && sources.length === 0) {
-      sources.push({ quality: 'Stream', url: iframeMatch[1] });
     }
 
     res.status(200).json({ status: 200, id, title, sources });
   } catch (err) {
     res.status(500).json({ status: 500, error: err.message, sources: [] });
   }
+}
+
+function parseSourceTags(html) {
+  const sources = [];
+  const seenUrls = new Set();
+  // Match: <source src="...mp4" ... data-quality="720p" ... label="720p" ... res="720">
+  const sourceRegex = /<source\s+[^>]*src="(https?:\/\/[^"]+\.mp4[^"]*)"[^>]*>/gi;
+  let m;
+  while ((m = sourceRegex.exec(html)) !== null) {
+    const srcUrl = m[1];
+    if (seenUrls.has(srcUrl)) continue;
+    seenUrls.add(srcUrl);
+
+    const tag = m[0];
+    const labelMatch = tag.match(/label='([^']+)'/) || tag.match(/label="([^"]+)"/) || tag.match(/data-quality="([^"]+)"/);
+    const quality = labelMatch ? labelMatch[1] : `${sources.length + 1}`;
+
+    sources.push({ quality, url: srcUrl });
+  }
+  return sources;
 }
