@@ -9,10 +9,12 @@ export default async function handler(req, res) {
   });
   const html = await response.text();
 
-  // Cari index pertama dubbindo.site/watch
   const idx = html.indexOf('dubbindo.site/watch');
-  const snippet = html.slice(Math.max(0, idx - 200), idx + 2000);
+  const raw = html.slice(idx - 5, idx + 100);
+
+  // Cek apakah ada karakter aneh
+  const hex = Buffer.from(raw).toString('hex');
 
   res.setHeader('Content-Type', 'text/plain');
-  res.send(`LEN: ${html.length} | IDX: ${idx}\n\n${snippet}`);
+  res.send(`IDX: ${idx}\nRAW: ${raw}\nHEX: ${hex}`);
 }
