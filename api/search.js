@@ -13,43 +13,42 @@ async function fetchPage(url) {
   return res.text();
 }
 
-function extractThumb(ctx) {
-  // Prioritas 1: path /upload/photos/ (thumbnail video)
-  const m1 = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/photos\/[^"]+\.(?:jpeg|jpg|png|webp))"/i);
-  if (m1) return m1[1];
-
-  // Prioritas 2: s3 dubbindo tapi exclude avatar/users/profile
-  const m2 = ctx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/(?!avatars|users|profile)[^"]+\.(?:jpeg|jpg|png|webp))"/i);
-  if (m2) return m2[1];
-
-  return '';
-}
-
 function parseVideos(html) {
   const videos = [];
-  const watchRegex = /href="https?:\/\/www\.dubbindo\.site\/watch\/([^"]+\.html)"/g;
   const seenIds = new Set();
 
+  const watchRegex = /href="https?:\/\/www\.dubbindo\.site\/watch\/([^"]+\.html)"/g;
   let match;
+
   while ((match = watchRegex.exec(html)) !== null) {
     const fullSlug = match[1];
     if (seenIds.has(fullSlug)) continue;
     seenIds.add(fullSlug);
 
-    const start = Math.max(0, match.index - 800);
-    const ctx = html.slice(start, match.index + fullSlug.length + 400);
+    // Context 1500 char setelah href (thumbnail ada di dalam <a> = setelah href)
+    const after = html.slice(match.index, match.index + 1500);
 
-    const thumb = extractThumb(ctx);
+    // Potong context tepat sebelum link profil uploader
+    // Profil uploader selalu ada tag <a href="/@username"> atau data-load="?link1=timeline"
+    const cutIdx = after.search(/href="https?:\/\/www\.dubbindo\.site\/@/);
+    const safeCtx = cutIdx > 50 ? after.slice(0, cutIdx) : after.slice(0, 600);
 
-    const titleMatch = ctx.match(/title="([^"]{3,150})"/) || ctx.match(/alt="([^"]{3,150})"/);
+    // Thumbnail: img pertama di safeCtx
+    const thumbMatch = safeCtx.match(/src="(https:\/\/s3\.dubbindo\.my\.id\/upload\/photos\/[^"]+)"/);
+    const thumb = thumbMatch ? thumbMatch[1] : '';
+
+    // Title dari h4 (ada di after penuh)
+    const titleMatch = after.match(/<h4 title="([^"]{3,150})"/) || after.match(/alt="([^"]{3,150})"/);
     const title = titleMatch
       ? titleMatch[1].replace(/^⁣/, '').trim()
       : fullSlug.replace(/_[^_]+\.html$/, '').replace(/-/g, ' ');
 
-    const viewsMatch = ctx.match(/<span>(\d[\d.,]*)\s*Views?<\/span>/i);
+    // Views
+    const viewsMatch = after.match(/<span>([\d,]+)\s*Views?<\/span>/i);
     const views = viewsMatch ? viewsMatch[1] : '0';
 
-    const timeMatch = ctx.match(/<span>([^<]*(?:second|minute|hour|day|week|month|year|ago|detik|menit|jam|hari)[^<]*)<\/span>/i);
+    // Date
+    const timeMatch = after.match(/<span>([^<]*(?:second|minute|hour|day|week|month|year|ago|detik|menit|jam|hari)[^<]*)<\/span>/i);
     const date = timeMatch ? timeMatch[1].trim() : '2026';
 
     if (title) {
