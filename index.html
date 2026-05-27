@@ -346,7 +346,7 @@ nav {
       <div class="spinner"></div>
       <span style="font-size:12px;color:var(--text-dim)">Memuat video...</span>
     </div>
-    <iframe id="playerIframe" allowfullscreen style="display:none;width:100%;height:100%;border:none;" allow="autoplay; fullscreen"></iframe>
+    <video id="playerVideo" controls playsinline style="display:none"></video>
   </div>
   <div class="player-body">
     <h2 class="player-title" id="playerTitle"></h2>
@@ -396,7 +396,10 @@ nav {
 
 <script>
 // ===== CONFIG =====
-const API = '';
+// Ganti dengan domain Vercel lu setelah deploy
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? ''  // local: relative path
+  : '';  // production: '' = same domain (Vercel)
 
 // ===== STATE =====
 let currentPage = 'home';
@@ -408,28 +411,6 @@ let heroVideos = [];
 let heroIndex = 0;
 let searchTimeout = null;
 let latestVideos = [];
-
-// ===== UTILS =====
-function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-}
-
-function errorCard(msg) {
-  return `<div style="padding:20px;color:var(--text-dim);font-size:13px;text-align:center">${msg}</div>`;
-}
-
-// ✅ FIX: proxy semua gambar lewat /api/image biar bypass hotlink protection
-function proxyImg(url) {
-  if (!url) return '';
-  return `/api/image?url=${encodeURIComponent(url)}`;
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2300);
-}
 
 // ===== INIT =====
 window.addEventListener('DOMContentLoaded', async () => {
@@ -453,6 +434,7 @@ async function fetchLatest(cat = 'all') {
     latestVideos = data.videos;
     renderCards('latestCards', data.videos);
 
+    // Set hero to first video
     if (cat === 'all' && data.videos.length > 0) {
       heroVideos = data.videos.slice(0, 5);
       renderHero(heroVideos[0]);
@@ -477,15 +459,14 @@ async function fetchTrending() {
 // ===== HERO =====
 function renderHero(v) {
   const bg = document.getElementById('heroBg');
-  // ✅ FIX: pakai proxyImg untuk background hero juga
-  bg.style.backgroundImage = `url('${proxyImg(v.thumb)}')`;
+  bg.style.backgroundImage = `url('${v.thumb}')`;
 
   document.getElementById('heroContent').innerHTML = `
     <div class="hero-poster">
-      <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\'/>'">
+      <img src="${v.thumb}" alt="${esc(v.title)}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\'/>'">
     </div>
     <div class="hero-info">
-      <div class="badge ongoing">${esc(v.catName)}</div>
+      <div class="badge ongoing">${v.catName}</div>
       <h1 class="hero-title">${esc(v.title)}</h1>
       <div class="hero-meta">
         <span>Dubbing Indonesia</span>
@@ -495,7 +476,7 @@ function renderHero(v) {
         <span>${v.views} views</span>
       </div>
       <div class="btn-group">
-        <button class="btn btn-primary" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+        <button class="btn btn-primary" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
           Tonton Sekarang
         </button>
@@ -521,10 +502,10 @@ function renderCards(containerId, videos) {
   const el = document.getElementById(containerId);
   if (!videos || videos.length === 0) { el.innerHTML = errorCard('Tidak ada konten'); return; }
   el.innerHTML = videos.map(v => `
-    <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+    <div class="card" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
       <div class="card-thumb">
-        <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
-        <div class="card-badge">${esc(v.catName)}</div>
+        <img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
+        <div class="card-badge">${v.catName}</div>
       </div>
       <div class="card-title">${esc(v.title)}</div>
       <div class="card-sub">${v.views} views · ${v.date}</div>
@@ -536,11 +517,11 @@ function renderReko(videos) {
   const el = document.getElementById('rekoList');
   if (!videos || videos.length === 0) { el.innerHTML = ''; return; }
   el.innerHTML = videos.map(v => `
-    <div class="reko-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-      <div class="reko-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
+    <div class="reko-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+      <div class="reko-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
       <div class="reko-info">
         <div class="reko-title">${esc(v.title)}</div>
-        <div class="reko-meta">${esc(v.catName)} · ${v.date}</div>
+        <div class="reko-meta">${v.catName} · ${v.date}</div>
       </div>
       <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
     </div>
@@ -549,11 +530,12 @@ function renderReko(videos) {
 
 // ===== PLAYER =====
 async function openPlayer(videoId, title, thumb) {
+  // Set page
   document.getElementById('playerHeaderTitle').textContent = title;
   document.getElementById('playerTitle').textContent = title;
   document.getElementById('playerMeta').textContent = 'Dubbing Indonesia · IndoStream';
   document.getElementById('playerLoading').style.display = 'flex';
-  document.getElementById('playerIframe').style.display = 'none';
+  document.getElementById('playerVideo').style.display = 'none';
   document.getElementById('qualityRow').innerHTML = '';
   document.getElementById('playerNext').innerHTML = '';
 
@@ -561,27 +543,71 @@ async function openPlayer(videoId, title, thumb) {
   goPage('player');
   window.scrollTo(0, 0);
 
-  const shortCode = videoId.replace(/\.html$/, '').split('_').pop();
-  const embedUrl = `https://www.dubbindo.site/embed/${shortCode}`;
+  // Fetch embed data
+  try {
+    const res = await fetch(`${API}/api/embed?id=${videoId}`);
+    const data = await res.json();
 
-  const iframe = document.getElementById('playerIframe');
-  iframe.src = embedUrl;
-  iframe.onload = () => {
-    document.getElementById('playerLoading').style.display = 'none';
-    iframe.style.display = 'block';
-  };
-  iframe.onerror = () => {
-    document.getElementById('playerLoading').innerHTML = `<p style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px">Gagal memuat video.<br>Coba lagi nanti.</p>`;
-  };
-
-  setTimeout(() => {
-    if (document.getElementById('playerLoading').style.display !== 'none') {
-      document.getElementById('playerLoading').style.display = 'none';
-      iframe.style.display = 'block';
+    if (!data.sources || data.sources.length === 0) {
+      document.getElementById('playerLoading').innerHTML = `<p style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px">Gagal memuat video.<br>Coba lagi nanti.</p>`;
+      return;
     }
-  }, 3000);
 
-  loadNextVideos(videoId);
+    currentSources = data.sources;
+    currentQuality = 0;
+
+    // Update title if available
+    if (data.title) {
+      document.getElementById('playerTitle').textContent = data.title;
+      document.getElementById('playerHeaderTitle').textContent = data.title;
+    }
+
+    // Render quality pills
+    document.getElementById('qualityRow').innerHTML = data.sources.map((s, i) => `
+      <div class="q-pill ${i===0?'active':''}" onclick="switchQuality(${i}, this)">${s.quality}</div>
+    `).join('');
+
+    // Play video
+    playSource(0);
+
+    // Load next videos
+    loadNextVideos(videoId);
+
+  } catch (e) {
+    document.getElementById('playerLoading').innerHTML = `<p style="color:var(--text-dim);font-size:13px;padding:20px;text-align:center">Error: ${e.message}</p>`;
+  }
+}
+
+function playSource(index) {
+  const video = document.getElementById('playerVideo');
+  const loading = document.getElementById('playerLoading');
+  const src = currentSources[index].url;
+
+  video.style.display = 'none';
+  loading.style.display = 'flex';
+  loading.innerHTML = `<div class="spinner"></div><span style="font-size:12px;color:var(--text-dim)">Memuat ${currentSources[index].quality}...</span>`;
+
+  video.src = src;
+  video.load();
+  video.oncanplay = () => {
+    loading.style.display = 'none';
+    video.style.display = 'block';
+    video.play().catch(()=>{});
+  };
+  video.onerror = () => {
+    loading.innerHTML = `<p style="color:var(--text-dim);font-size:12px;text-align:center;padding:20px">Gagal memuat ${currentSources[index].quality}.<br>Coba kualitas lain.</p>`;
+  };
+}
+
+function switchQuality(index, el) {
+  document.querySelectorAll('.q-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const currentTime = document.getElementById('playerVideo').currentTime;
+  currentQuality = index;
+  playSource(index);
+  document.getElementById('playerVideo').addEventListener('canplay', () => {
+    document.getElementById('playerVideo').currentTime = currentTime;
+  }, { once: true });
 }
 
 async function loadNextVideos(currentId) {
@@ -590,11 +616,11 @@ async function loadNextVideos(currentId) {
     const data = await res.json();
     const others = (data.videos || []).filter(v => v.id !== currentId).slice(0, 5);
     document.getElementById('playerNext').innerHTML = others.map(v => `
-      <div class="reko-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-        <div class="reko-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
+      <div class="reko-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+        <div class="reko-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
         <div class="reko-info">
           <div class="reko-title">${esc(v.title)}</div>
-          <div class="reko-meta">${esc(v.catName)} · ${v.date}</div>
+          <div class="reko-meta">${v.catName} · ${v.date}</div>
         </div>
         <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
       </div>
@@ -603,6 +629,8 @@ async function loadNextVideos(currentId) {
 }
 
 // ===== SEARCH =====
+let searchAbort = null;
+
 function doSearch(q) {
   clearTimeout(searchTimeout);
   const container = document.getElementById('searchResults');
@@ -612,7 +640,7 @@ function doSearch(q) {
     return;
   }
 
-  container.innerHTML = `<div class="search-empty"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:12px">Mencari "${esc(q)}"...</p></div>`;
+  container.innerHTML = `<div class="search-empty"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:12px">Mencari "${q}"...</p></div>`;
 
   searchTimeout = setTimeout(async () => {
     try {
@@ -625,11 +653,11 @@ function doSearch(q) {
       }
 
       container.innerHTML = data.videos.map(v => `
-        <div class="search-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-          <div class="search-item-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
+        <div class="search-item" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
+          <div class="search-item-thumb"><img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy"></div>
           <div class="search-item-info">
             <div class="title">${esc(v.title)}</div>
-            <div class="meta">${esc(v.catName)} · ${v.date} · ${v.views} views</div>
+            <div class="meta">${v.catName} · ${v.date} · ${v.views} views</div>
           </div>
         </div>
       `).join('');
@@ -652,8 +680,9 @@ function goPage(name) {
 function goBack() {
   const prev = pageStack.pop();
   if (prev) {
-    const iframe = document.getElementById('playerIframe');
-    if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
+    const video = document.getElementById('playerVideo');
+    video.pause();
+    video.src = '';
     goPage(prev);
   } else {
     goPage('home');
@@ -676,10 +705,10 @@ function loadMore() {
       if (data.videos && data.videos.length > 0) {
         const container = document.getElementById('latestCards');
         container.innerHTML += data.videos.map(v => `
-          <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+          <div class="card" onclick="openPlayer('${v.id}','${esc(v.title)}','${v.thumb}')">
             <div class="card-thumb">
-              <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
-              <div class="card-badge">${esc(v.catName)}</div>
+              <img src="${v.thumb}" alt="${esc(v.title)}" loading="lazy">
+              <div class="card-badge">${v.catName}</div>
             </div>
             <div class="card-title">${esc(v.title)}</div>
             <div class="card-sub">${v.views} views · ${v.date}</div>
@@ -696,6 +725,22 @@ function navSearchHandler(val) {
     document.getElementById('searchInput').value = val;
     doSearch(val);
   }
+}
+
+// ===== UTILS =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2300);
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function errorCard(msg) {
+  return `<div style="padding:20px;color:var(--text-dim);font-size:13px;text-align:center">${msg}</div>`;
 }
 </script>
 </body>
