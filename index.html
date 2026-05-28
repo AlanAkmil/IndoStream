@@ -3,784 +3,700 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IndoStream</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>IndoStream – Dubbing Indonesia</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-:root{
-  --g:#c9a84c;--gd:#8a5e1e;--gl:#f0d080;
-  --b:#07080a;--b2:#0e0f12;--b3:#16181d;--b4:#1e2026;--b5:#262830;
-  --t:#f4f2ee;--tm:#989690;--td:#4a4840;
-  --gr:#4ade80;--rd:#f87171;--bl:#60a5fa;--pu:#a78bfa;
-  --r:12px;
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dim: #7a6030;
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #1a1a1a;
+  --bg4: #222222;
+  --text: #f0ece0;
+  --text-dim: #888880;
+  --green: #50c878;
+  --radius: 10px;
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html{scroll-behavior:smooth;}
-body{font-family:'Inter',sans-serif;background:var(--b);color:var(--t);min-height:100vh;overflow-x:hidden;}
-::-webkit-scrollbar{width:0;}
-input,button{font-family:'Inter',sans-serif;}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:var(--bg2); }
+::-webkit-scrollbar-thumb { background:var(--gold-dim); border-radius:2px; }
 
 /* NAV */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:99;
-  padding:12px 16px;
-  display:flex;align-items:center;gap:10px;
-  background:rgba(7,8,10,0.9);
-  backdrop-filter:blur(24px);
-  border-bottom:1px solid rgba(255,255,255,0.04);
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  background:rgba(10,10,10,0.92);
+  border-bottom:1px solid rgba(201,168,76,0.08);
+  backdrop-filter:blur(14px);
 }
-.logo{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;flex-shrink:0;cursor:pointer;letter-spacing:-0.3px;}
-.logo em{color:var(--g);font-style:normal;}
-.nsw{flex:1;position:relative;}
-.ni{width:100%;background:var(--b3);border:1.5px solid rgba(255,255,255,0.07);border-radius:24px;padding:9px 14px 9px 38px;color:var(--t);font-size:13px;outline:none;transition:.25s;}
-.ni:focus{border-color:rgba(201,168,76,0.5);background:var(--b4);}
-.ni::placeholder{color:var(--td);}
-.ns-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);}
-.ns-ic svg{width:15px;height:15px;stroke:var(--td);fill:none;stroke-width:2;}
-.nav-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#07080a;}
+.logo { font-family:'Cinzel',serif; font-size:20px; font-weight:700; letter-spacing:1px; cursor:pointer; }
+.logo span { color:var(--gold); }
+.nav-right { display:flex; align-items:center; gap:10px; }
+.nav-search-wrap { position:relative; }
+.nav-search {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(201,168,76,0.18);
+  border-radius:20px; padding:7px 12px 7px 32px;
+  color:var(--text); font-family:'DM Sans',sans-serif; font-size:12px;
+  width:140px; outline:none; transition:all .3s;
+}
+.nav-search:focus { border-color:var(--gold); width:180px; background:rgba(201,168,76,0.06); }
+.nav-search::placeholder { color:var(--text-dim); }
+.nav-search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.4; }
+.nav-search-icon svg { width:14px; height:14px; stroke:var(--text); fill:none; stroke-width:2; }
 
-/* PAGE */
-.page{display:none;padding-bottom:76px;}
-.page.active{display:block;animation:fi .2s ease;}
-@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* PAGES */
+.page { display:none; padding-bottom:75px; animation:fadeIn .25s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
 /* HERO */
-.hero{position:relative;height:96svh;max-height:640px;display:flex;align-items:flex-end;overflow:hidden;}
-.hbg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.22) saturate(1.3);transform:scale(1.1);transition:background-image .7s;}
-.hov{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,8,10,1) 0%,rgba(7,8,10,.7) 35%,rgba(7,8,10,.1) 70%,transparent 100%);}
-.hcon{position:relative;z-index:2;padding:0 18px 30px;width:100%;}
-.hbadges{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
-.hb{padding:4px 10px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;}
-.hb-cat{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);color:var(--g);}
-.hb-new{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:var(--gr);display:flex;align-items:center;gap:4px;}
-.hb-new::before{content:'';width:5px;height:5px;background:var(--gr);border-radius:50%;animation:dot 2s infinite;}
-@keyframes dot{0%,100%{opacity:1}50%{opacity:.2}}
-.htitle{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1.15;margin-bottom:8px;letter-spacing:-.3px;}
-.hmeta{font-size:11px;color:var(--tm);margin-bottom:18px;display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
-.hmeta .dot{color:var(--gd);}
-.hmeta .views{color:var(--g);font-weight:600;}
-.hbtns{display:flex;gap:8px;}
-.hbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:.2s;letter-spacing:.2px;}
-.hbtn-play{background:var(--g);color:#07080a;box-shadow:0 4px 24px rgba(201,168,76,.3);}
-.hbtn-play:active{transform:scale(.96);}
-.hbtn-bm{background:rgba(255,255,255,.08);color:var(--t);border:1.5px solid rgba(255,255,255,.1);flex:0 0 50px;}
-.hbtn-bm:active{transform:scale(.95);}
-.hbtn-bm svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
-.hero-dots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3;}
-.hdot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.25);transition:.3s;}
-.hdot.active{width:18px;border-radius:3px;background:var(--g);}
+.hero {
+  position:relative; min-height:95vh;
+  display:flex; align-items:flex-end; padding-bottom:36px;
+  overflow:hidden;
+}
+.hero-bg {
+  position:absolute; inset:0;
+  background-size:cover; background-position:center top;
+  filter:blur(3px) brightness(0.3);
+  transform:scale(1.05);
+  transition:background-image .5s ease;
+}
+.hero-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(10,10,10,.2) 0%, rgba(10,10,10,.5) 55%, rgba(10,10,10,1) 100%);
+}
+.hero-content { position:relative; z-index:2; width:100%; padding:0 18px; display:flex; gap:16px; align-items:flex-end; }
+.hero-poster {
+  width:105px; flex-shrink:0; border-radius:10px; overflow:hidden;
+  border:2px solid rgba(201,168,76,.4); box-shadow:0 10px 40px rgba(0,0,0,.7);
+  animation:slideUp .5s ease both;
+}
+.hero-poster img { width:100%; display:block; }
+.hero-info { flex:1; animation:slideUp .5s .1s ease both; }
+@keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 
-/* CHIPS */
-.chips{display:flex;gap:7px;overflow-x:auto;padding:0 18px 2px;scrollbar-width:none;margin-bottom:4px;}
-.chips::-webkit-scrollbar{display:none;}
-.chip{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid rgba(255,255,255,.07);background:var(--b3);color:var(--tm);transition:.2s;}
-.chip.active{background:var(--g);color:#07080a;border-color:var(--g);font-weight:700;}
-.chip:active{transform:scale(.96);}
+.badge {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(201,168,76,.12); border:1px solid var(--gold);
+  border-radius:20px; padding:3px 10px; font-size:10px; font-weight:600;
+  color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;
+}
+.badge.ongoing::before { content:''; width:6px; height:6px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+
+.hero-title { font-family:'Cinzel',serif; font-size:24px; font-weight:700; line-height:1.2; margin-bottom:8px; text-shadow:0 2px 12px rgba(0,0,0,.6); }
+.hero-meta { font-size:11px; color:var(--text-dim); margin-bottom:18px; display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+.hero-meta .dot { color:var(--gold-dim); }
+
+.btn-group { display:flex; flex-direction:column; gap:9px; }
+.btn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 18px; border-radius:10px; font-family:'DM Sans',sans-serif;
+  font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all .25s;
+}
+.btn-primary { background:linear-gradient(135deg,var(--gold),#a07830); color:#0a0a0a; box-shadow:0 4px 18px rgba(201,168,76,.3); }
+.btn-primary:active { transform:scale(.97); }
+.btn-secondary { background:rgba(255,255,255,.07); color:var(--text); border:1px solid rgba(255,255,255,.1); }
+.btn-secondary:active { transform:scale(.97); }
 
 /* SECTION */
-.sec{padding:22px 0 4px;}
-.sech{display:flex;align-items:center;justify-content:space-between;padding:0 18px;margin-bottom:14px;}
-.sect{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
-.sect-bar{width:3px;height:15px;background:var(--g);border-radius:2px;}
-.sea{font-size:11px;color:var(--g);cursor:pointer;display:flex;align-items:center;gap:3px;font-weight:500;}
-.sea svg{width:13px;height:13px;stroke:var(--g);fill:none;stroke-width:2.5;}
-.sea:active{opacity:.7;}
+.section { padding:22px 18px; }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.section-title { font-family:'Cinzel',serif; font-size:13px; font-weight:600; color:var(--gold); letter-spacing:2px; text-transform:uppercase; }
+.section-line { flex:1; height:1px; background:linear-gradient(to right,rgba(201,168,76,.25),transparent); margin-left:10px; }
+.see-all { font-size:11px; color:var(--text-dim); cursor:pointer; transition:color .2s; text-decoration:none; margin-left:10px; }
+.see-all:hover { color:var(--gold); }
 
-/* CARD ROW */
-.crow{display:flex;gap:10px;overflow-x:auto;padding:0 18px 4px;scrollbar-width:none;}
-.crow::-webkit-scrollbar{display:none;}
-.card{flex-shrink:0;width:112px;cursor:pointer;}
-.card:active .cthumb{transform:scale(.95);}
-.cthumb{width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;position:relative;background:var(--b3);margin-bottom:8px;transition:.2s;box-shadow:0 4px 16px rgba(0,0,0,.5);}
-.cthumb img{width:100%;height:100%;object-fit:cover;display:block;}
-.cthumb-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 55%);}
-.cbadge{position:absolute;top:6px;left:6px;background:rgba(7,8,10,.85);border:1px solid rgba(201,168,76,.25);color:var(--g);font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;}
-.cdur{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.75);color:#fff;font-size:9px;font-weight:600;padding:2px 5px;border-radius:3px;}
-.ctitle{font-size:11px;font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--t);}
-.csub{font-size:10px;color:var(--td);margin-top:2px;}
+/* CHIPS */
+.chips { display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; margin-bottom:14px; }
+.chips::-webkit-scrollbar { display:none; }
+.chip {
+  flex-shrink:0; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:500;
+  cursor:pointer; border:1px solid rgba(201,168,76,.22); background:transparent;
+  color:var(--text-dim); transition:all .2s;
+}
+.chip.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); font-weight:600; }
+.chip:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
 
-/* LIST ITEM */
-.lw{padding:0 18px;display:flex;flex-direction:column;}
-.li{display:flex;align-items:center;gap:12px;padding:10px 8px;border-radius:10px;cursor:pointer;transition:.15s;}
-.li:active{background:rgba(201,168,76,.06);}
-.lthumb{width:62px;height:84px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--b3);box-shadow:0 4px 12px rgba(0,0,0,.4);}
-.lthumb img{width:100%;height:100%;object-fit:cover;}
-.linfo{flex:1;min-width:0;}
-.ltitle{font-size:13px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px;}
-.lmeta{font-size:10px;color:var(--td);display:flex;gap:4px;flex-wrap:wrap;}
-.lmeta .lv{color:var(--tm);font-weight:500;}
-.larr svg{width:14px;height:14px;stroke:var(--td);fill:none;stroke-width:2;}
+/* CARD SCROLL */
+.card-scroll { display:flex; gap:11px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
+.card-scroll::-webkit-scrollbar { display:none; }
+.card { flex-shrink:0; width:108px; cursor:pointer; transition:transform .25s; }
+.card:hover { transform:translateY(-3px); }
+.card:active { transform:scale(.96); }
+.card-thumb {
+  width:100%; aspect-ratio:3/4; border-radius:8px; overflow:hidden;
+  position:relative; background:var(--bg3); margin-bottom:7px;
+  border:1px solid rgba(201,168,76,.12);
+}
+.card-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s; }
+.card:hover .card-thumb img { transform:scale(1.06); }
+.card-badge {
+  position:absolute; bottom:5px; left:5px;
+  background:rgba(10,10,10,.85); border:1px solid var(--gold-dim);
+  color:var(--gold-light); font-size:8px; font-weight:600;
+  padding:2px 6px; border-radius:4px; letter-spacing:.5px; text-transform:uppercase;
+}
+.card-title { font-size:11px; font-weight:500; color:var(--text); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card-sub { font-size:10px; color:var(--text-dim); margin-top:2px; }
+
+/* REKO LIST */
+.reko-list { display:flex; flex-direction:column; gap:10px; }
+.reko-item {
+  display:flex; align-items:center; gap:12px; cursor:pointer;
+  padding:8px; border-radius:10px; transition:background .2s;
+}
+.reko-item:hover { background:rgba(201,168,76,.05); }
+.reko-item:active { background:rgba(201,168,76,.1); }
+.reko-thumb { width:58px; height:78px; border-radius:7px; overflow:hidden; flex-shrink:0; background:var(--bg3); border:1px solid rgba(201,168,76,.12); }
+.reko-thumb img { width:100%; height:100%; object-fit:cover; }
+.reko-info { flex:1; }
+.reko-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.reko-meta { font-size:11px; color:var(--text-dim); }
+.chevron svg { width:14px; height:14px; stroke:var(--text-dim); fill:none; stroke-width:2; }
 
 /* SKELETON */
-.sk{background:linear-gradient(90deg,var(--b3) 25%,var(--b4) 50%,var(--b3) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:8px;}
-@keyframes sk{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton { background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
+@keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 
-/* PLAYER */
-.ptop{padding:56px 16px 10px;display:flex;align-items:center;gap:10px;}
-.pbk{width:36px;height:36px;border-radius:50%;background:var(--b3);border:1.5px solid rgba(255,255,255,.06);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;}
-.pbk:active{transform:scale(.9);}
-.pbk svg{width:16px;height:16px;stroke:var(--t);fill:none;stroke-width:2.5;}
-.ptoptitle{font-size:13px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.pframe{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden;}
-.pframe iframe{width:100%;height:100%;border:none;display:block;}
-.ploading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#000;}
-.spin{width:36px;height:36px;border:3px solid rgba(201,168,76,.15);border-top-color:var(--g);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.pbody{padding:14px 18px 8px;}
-.ptitle{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;line-height:1.25;margin-bottom:10px;letter-spacing:-.2px;}
-.pacts{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-.pact{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;background:var(--b3);border:1.5px solid rgba(255,255,255,.06);cursor:pointer;font-size:12px;font-weight:500;color:var(--tm);transition:.15s;flex-shrink:0;}
-.pact:active{transform:scale(.95);}
-.pact svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;}
-.pact.liked{color:var(--rd);border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.08);}
-.pact.liked svg{fill:var(--rd);stroke:var(--rd);}
-.pact.saved{color:var(--g);border-color:rgba(201,168,76,.25);background:rgba(201,168,76,.08);}
-.pact.saved svg{fill:var(--g);stroke:var(--g);}
-.pdiv{height:1px;background:rgba(255,255,255,.05);margin:12px 0;}
-.pnl{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:0 18px;margin-bottom:10px;}
+/* PLAYER PAGE */
+.player-header { padding:64px 18px 12px; display:flex; align-items:center; gap:10px; }
+.back-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.07); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.back-btn svg { width:16px; height:16px; stroke:var(--text); fill:none; stroke-width:2; }
+.player-header-title { font-size:14px; font-weight:600; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.player-wrap { width:100%; aspect-ratio:16/9; background:#000; position:relative; }
+.player-wrap video, .player-wrap iframe { width:100%; height:100%; display:block; }
+.player-loading {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:#000; flex-direction:column; gap:12px;
+}
+.spinner { width:36px; height:36px; border:3px solid rgba(201,168,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
 
-/* SEARCH */
-.stop{padding:58px 16px 14px;}
-.sbig{width:100%;background:var(--b3);border:1.5px solid rgba(255,255,255,.07);border-radius:14px;padding:13px 44px 13px 44px;color:var(--t);font-size:14px;outline:none;transition:.25s;}
-.sbig:focus{border-color:rgba(201,168,76,.4);background:var(--b4);}
-.sbig::placeholder{color:var(--td);}
-.sico{position:absolute;left:14px;top:50%;transform:translateY(-50%);}
-.sico svg{width:17px;height:17px;stroke:var(--td);fill:none;stroke-width:2;}
-.sclr{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:var(--b5);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;}
-.sclr svg{width:12px;height:12px;stroke:var(--td);fill:none;stroke-width:2.5;}
-.sclr.on{display:flex;}
-.sres{padding:0 16px;}
-.sempty{text-align:center;padding:60px 20px;color:var(--td);}
-.sempty-ic{width:56px;height:56px;border-radius:16px;background:var(--b3);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
-.sempty-ic svg{width:24px;height:24px;stroke:var(--td);fill:none;stroke-width:1.5;}
-.sempty p{font-size:13px;line-height:1.7;color:var(--tm);}
-.si{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:.15s;}
-.si:active{opacity:.65;}
-.sithumb{width:50px;height:68px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--b3);}
-.sithumb img{width:100%;height:100%;object-fit:cover;}
-.sititle{font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.3;}
-.simeta{font-size:11px;color:var(--td);}
+.player-body { padding:16px 18px; }
+.player-title { font-family:'Cinzel',serif; font-size:17px; font-weight:700; margin-bottom:8px; line-height:1.3; }
+.player-meta { font-size:11px; color:var(--text-dim); margin-bottom:14px; display:flex; gap:8px; flex-wrap:wrap; }
 
-/* SAVED */
-.svhead{padding:58px 18px 16px;display:flex;align-items:center;justify-content:space-between;}
-.svtitle{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
-.svcount{font-size:11px;color:var(--tm);margin-top:2px;}
-.sv-clr{font-size:11px;color:var(--rd);padding:7px 13px;border-radius:8px;background:rgba(248,113,113,.08);border:1.5px solid rgba(248,113,113,.15);cursor:pointer;transition:.15s;}
-.sv-clr:active{transform:scale(.95);}
-.svempty{text-align:center;padding:80px 20px;}
-.svempty-ic{width:64px;height:64px;border-radius:18px;background:var(--b3);border:1.5px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
-.svempty-ic svg{width:28px;height:28px;stroke:var(--td);fill:none;stroke-width:1.5;}
-.svempty h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px;}
-.svempty p{font-size:12px;color:var(--td);line-height:1.7;}
-.sv-del svg{width:16px;height:16px;stroke:var(--rd);fill:none;stroke-width:2;}
-.sv-del{padding:8px;cursor:pointer;transition:.15s;}
-.sv-del:active{transform:scale(.85);}
+.quality-row { display:flex; gap:7px; margin-bottom:14px; }
+.q-pill {
+  padding:5px 11px; border-radius:6px; font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid rgba(201,168,76,.25);
+  background:transparent; color:var(--text-dim); transition:all .2s;
+}
+.q-pill.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); }
 
-/* PROFILE */
-.prhead{padding:58px 18px 20px;}
-.prav{width:68px;height:68px;border-radius:22px;background:linear-gradient(135deg,var(--g),var(--gd));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#07080a;margin-bottom:14px;box-shadow:0 8px 24px rgba(201,168,76,.25);}
-.prname{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:3px;}
-.prtag{font-size:12px;color:var(--td);}
-.strow{display:flex;gap:10px;padding:0 18px;margin-bottom:20px;}
-.stcard{flex:1;background:var(--b3);border-radius:12px;padding:14px 10px;text-align:center;border:1.5px solid rgba(255,255,255,.04);}
-.stnum{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--g);}
-.stlbl{font-size:9px;color:var(--td);margin-top:2px;text-transform:uppercase;letter-spacing:.6px;}
-.prsec{padding:0 18px 18px;}
-.prsec-t{font-size:10px;color:var(--td);font-weight:600;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
-.pri{display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:12px;cursor:pointer;transition:.15s;}
-.pri:active{background:rgba(255,255,255,.04);}
-.priico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.priico svg{width:17px;height:17px;fill:none;stroke-width:1.8;}
-.pril{flex:1;font-size:13px;font-weight:500;}
-.prisub{font-size:10px;color:var(--td);margin-top:2px;}
-.prarr svg{width:14px;height:14px;stroke:var(--td);fill:none;stroke-width:2;}
-.credit{margin:4px 18px 0;padding:18px;background:var(--b3);border-radius:16px;border:1.5px solid rgba(201,168,76,.1);text-align:center;}
-.credit-logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;}
-.credit-logo em{color:var(--g);font-style:normal;}
-.credit p{font-size:12px;color:var(--td);line-height:1.8;}
-.credit strong{color:var(--g);}
-.credit-v{display:inline-block;margin-top:10px;font-size:9px;color:var(--td);letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);}
+.divider { height:1px; background:rgba(255,255,255,.05); margin:14px 0; }
+
+/* SEARCH PAGE */
+.search-top { padding:68px 18px 14px; }
+.search-wrap { position:relative; }
+.search-big {
+  width:100%; background:var(--bg3); border:1px solid rgba(201,168,76,.2);
+  border-radius:12px; padding:13px 16px 13px 42px; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .3s;
+}
+.search-big:focus { border-color:var(--gold); }
+.search-big::placeholder { color:var(--text-dim); }
+.search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); }
+.search-icon svg { width:16px; height:16px; stroke:var(--text-dim); fill:none; stroke-width:2; }
+.search-results { padding:0 18px; }
+.search-empty { text-align:center; padding:50px 0; color:var(--text-dim); }
+.search-empty svg { width:44px; height:44px; stroke:currentColor; fill:none; stroke-width:1; opacity:.3; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto; }
+.search-item {
+  display:flex; gap:12px; align-items:center;
+  padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer;
+  transition:opacity .2s;
+}
+.search-item:active { opacity:.7; }
+.search-item-thumb { width:48px; height:66px; border-radius:6px; overflow:hidden; flex-shrink:0; background:var(--bg3); }
+.search-item-thumb img { width:100%; height:100%; object-fit:cover; }
+.search-item-info .title { font-size:13px; font-weight:600; margin-bottom:4px; line-height:1.3; }
+.search-item-info .meta { font-size:11px; color:var(--text-dim); }
 
 /* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:99;display:flex;background:rgba(7,8,10,.96);border-top:1px solid rgba(255,255,255,.05);backdrop-filter:blur(24px);padding-bottom:env(safe-area-inset-bottom);}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0 6px;cursor:pointer;gap:3px;transition:.15s;position:relative;}
-.bni:active{opacity:.6;}
-.bni svg{width:21px;height:21px;stroke:var(--td);fill:none;stroke-width:1.6;transition:.2s;}
-.bni span{font-size:9px;color:var(--td);transition:.2s;letter-spacing:.2px;}
-.bni.active svg{stroke:var(--g);}
-.bni.active span{color:var(--g);font-weight:600;}
-.bni-pip{position:absolute;top:8px;right:calc(50% - 14px);width:7px;height:7px;background:var(--rd);border-radius:50%;border:1.5px solid var(--b);display:none;}
-.bni-pip.on{display:block;}
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  display:flex; background:rgba(10,10,10,.96);
+  border-top:1px solid rgba(201,168,76,.08);
+  backdrop-filter:blur(14px);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:9px 0; cursor:pointer; gap:3px; transition:opacity .2s; }
+.nav-item:active { opacity:.7; }
+.nav-item svg { width:20px; height:20px; stroke:var(--text-dim); fill:none; stroke-width:1.7; transition:stroke .2s; }
+.nav-item span { font-size:9px; color:var(--text-dim); transition:color .2s; letter-spacing:.3px; }
+.nav-item.active svg { stroke:var(--gold); }
+.nav-item.active span { color:var(--gold); font-weight:600; }
 
 /* TOAST */
-.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--b4);border:1px solid rgba(255,255,255,.08);color:var(--t);padding:10px 20px;border-radius:24px;font-size:12px;font-weight:500;opacity:0;pointer-events:none;transition:.28s;z-index:500;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,.5);}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast {
+  position:fixed; bottom:85px; left:50%; transform:translateX(-50%) translateY(12px);
+  background:var(--bg4); border:1px solid rgba(201,168,76,.25);
+  color:var(--text); padding:9px 18px; border-radius:20px;
+  font-size:12px; opacity:0; pointer-events:none; transition:all .28s; z-index:300; white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* MODAL */
-.mo{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:.25s;}
-.mo.on{opacity:1;pointer-events:all;}
-.ms{width:100%;background:var(--b2);border-radius:22px 22px 0 0;border-top:1px solid rgba(255,255,255,.07);padding:14px 20px 36px;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);}
-.mo.on .ms{transform:translateY(0);}
-.mh{width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 16px;}
-.mt{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:16px;}
-.mopt{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:.15s;}
-.mopt:last-child{border-bottom:none;}
-.mopt:active{opacity:.65;}
-.moic{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.moic svg{width:18px;height:18px;fill:none;stroke-width:1.8;}
-.mol{font-size:13px;font-weight:600;}
-.mos{font-size:11px;color:var(--td);margin-top:2px;}
-.mbtn{padding:13px;border-radius:12px;font-size:13px;font-weight:600;text-align:center;cursor:pointer;transition:.15s;margin-bottom:8px;}
-.mbtn:active{transform:scale(.97);}
-.mbtn-red{background:rgba(248,113,113,.1);border:1.5px solid rgba(248,113,113,.2);color:var(--rd);}
-.mbtn-gray{background:var(--b3);border:1.5px solid rgba(255,255,255,.05);color:var(--tm);}
+/* ERROR STATE */
+.error-state { text-align:center; padding:40px 20px; color:var(--text-dim); }
+.error-state p { font-size:13px; margin-top:8px; }
+.retry-btn { margin-top:14px; padding:9px 20px; border-radius:20px; border:1px solid var(--gold); background:transparent; color:var(--gold); font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif; }
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="logo" onclick="goPage('home')">Indo<em>Stream</em></div>
-  <div class="nsw">
-    <div class="ns-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-    <input class="ni" type="text" placeholder="Cari film, anime..." id="navSearch" oninput="navSH(this.value)">
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="goPage('home')">Indo<span>Stream</span></div>
+  <div class="nav-right">
+    <div class="nav-search-wrap">
+      <div class="nav-search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <input class="nav-search" type="text" placeholder="Cari..." id="navSearch" oninput="navSearchHandler(this.value)">
+    </div>
   </div>
-  <div class="nav-av" onclick="goPage('profile')">A</div>
 </nav>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<div class="mo" id="mo" onclick="closeMo()">
-  <div class="ms" onclick="event.stopPropagation()">
-    <div class="mh"></div>
-    <div id="mc"></div>
-  </div>
-</div>
-
-<!-- HOME -->
+<!-- ===== HOME ===== -->
 <div class="page active" id="page-home">
-  <div class="hero">
-    <div class="hbg" id="hbg"></div>
-    <div class="hov"></div>
-    <div class="hcon" id="hcon">
-      <div class="sk" style="height:12px;width:70px;border-radius:20px;margin-bottom:12px;"></div>
-      <div class="sk" style="height:28px;width:92%;margin-bottom:8px;"></div>
-      <div class="sk" style="height:11px;width:55%;margin-bottom:20px;"></div>
-      <div style="display:flex;gap:8px"><div class="sk" style="height:44px;flex:1;border-radius:12px;"></div><div class="sk" style="height:44px;width:50px;border-radius:12px;"></div></div>
+
+  <!-- HERO -->
+  <div class="hero" id="heroSection">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content" id="heroContent">
+      <div class="hero-poster skeleton" style="width:105px;aspect-ratio:2/3;border-radius:10px;"></div>
+      <div style="flex:1">
+        <div class="skeleton" style="height:14px;width:60px;margin-bottom:10px;border-radius:20px;"></div>
+        <div class="skeleton" style="height:26px;width:90%;margin-bottom:8px;"></div>
+        <div class="skeleton" style="height:12px;width:70%;margin-bottom:20px;"></div>
+        <div class="skeleton" style="height:44px;border-radius:10px;margin-bottom:9px;"></div>
+        <div class="skeleton" style="height:44px;border-radius:10px;"></div>
+      </div>
     </div>
-    <div class="hero-dots" id="hdots"></div>
   </div>
 
-  <div style="padding-top:18px;">
-    <div class="chips" id="chips">
+  <!-- CHIPS -->
+  <div class="section" style="padding-bottom:0">
+    <div class="chips">
       <div class="chip active" onclick="filterCat(this,'all')">Semua</div>
-      <div class="chip" onclick="filterCat(this,'5')">🎌 Anime Series</div>
-      <div class="chip" onclick="filterCat(this,'4')">🎬 Anime Movie</div>
-      <div class="chip" onclick="filterCat(this,'3')">📺 TV Series</div>
-      <div class="chip" onclick="filterCat(this,'1')">🎞 Film</div>
-    </div>
-
-    <div class="sec">
-      <div class="sech">
-        <div class="sect"><div class="sect-bar"></div>Terbaru</div>
-        <div class="sea" onclick="loadMore()">Lihat Semua <svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
-      </div>
-      <div class="crow" id="latestCards">
-        ${[...Array(5)].map(()=>`<div class="card"><div class="cthumb sk" style="aspect-ratio:2/3"></div><div class="sk" style="height:11px;margin-top:8px;border-radius:4px"></div><div class="sk" style="height:9px;margin-top:4px;width:60%;border-radius:4px"></div></div>`).join('')}
-      </div>
-    </div>
-
-    <div class="sec">
-      <div class="sech">
-        <div class="sect"><div class="sect-bar"></div>Trending</div>
-      </div>
-      <div class="crow" id="trendingCards">
-        ${[...Array(4)].map(()=>`<div class="card"><div class="cthumb sk" style="aspect-ratio:2/3"></div><div class="sk" style="height:11px;margin-top:8px;border-radius:4px"></div></div>`).join('')}
-      </div>
-    </div>
-
-    <div class="sec">
-      <div class="sech"><div class="sect"><div class="sect-bar"></div>Rekomendasi</div></div>
-      <div class="lw" id="rekoList">
-        ${[...Array(4)].map(()=>`<div class="li"><div class="lthumb sk"></div><div style="flex:1"><div class="sk" style="height:13px;margin-bottom:6px;border-radius:4px"></div><div class="sk" style="height:10px;width:50%;border-radius:4px"></div></div></div>`).join('')}
-      </div>
+      <div class="chip" onclick="filterCat(this,'5')">Anime Series</div>
+      <div class="chip" onclick="filterCat(this,'4')">Anime Movie</div>
+      <div class="chip" onclick="filterCat(this,'3')">TV Series</div>
+      <div class="chip" onclick="filterCat(this,'1')">Film Movie</div>
     </div>
   </div>
+
+  <!-- LATEST -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Terbaru</span>
+      <div class="section-line"></div>
+      <a class="see-all" onclick="loadMore()">Lihat Semua</a>
+    </div>
+    <div class="card-scroll" id="latestCards">
+      ${[...Array(5)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div><div class="skeleton" style="height:9px;margin-top:4px;width:70%"></div></div>`).join('')}
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Trending</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="card-scroll" id="trendingCards">
+      ${[...Array(4)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div></div>`).join('')}
+    </div>
+  </div>
+
+  <!-- REKOMENDASI -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Rekomendasi</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="reko-list" id="rekoList">
+      ${[...Array(4)].map(()=>`<div class="reko-item"><div class="reko-thumb skeleton"></div><div style="flex:1"><div class="skeleton" style="height:13px;margin-bottom:6px"></div><div class="skeleton" style="height:10px;width:60%"></div></div></div>`).join('')}
+    </div>
+  </div>
+
 </div>
 
-<!-- PLAYER -->
+<!-- ===== PLAYER ===== -->
 <div class="page" id="page-player">
-  <div class="ptop">
-    <button class="pbk" onclick="goBack()"><svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg></button>
-    <div class="ptoptitle" id="pht">Memuat...</div>
+  <div class="player-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
+    </button>
+    <div class="player-header-title" id="playerHeaderTitle">Loading...</div>
   </div>
-  <div class="pframe">
-    <div class="ploading" id="ploading"><div class="spin"></div><span style="font-size:12px;color:var(--td)">Memuat video...</span></div>
-    <iframe id="pif" allowfullscreen allow="autoplay;fullscreen" style="display:none;width:100%;height:100%;border:none;"></iframe>
-  </div>
-  <div class="pbody">
-    <h2 class="ptitle" id="ptitle"></h2>
-    <div class="pacts">
-      <div class="pact" id="likeBtn" onclick="toggleLike()">
-        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        Suka
-      </div>
-      <div class="pact" id="saveBtn" onclick="toggleSavePlayer()">
-        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        Simpan
-      </div>
-      <div class="pact" onclick="shareVideo()">
-        <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Share
-      </div>
-      <div class="pact" onclick="showMoreOpts()">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-        Lainnya
-      </div>
+  <div class="player-wrap">
+    <div class="player-loading" id="playerLoading">
+      <div class="spinner"></div>
+      <span style="font-size:12px;color:var(--text-dim)">Memuat video...</span>
     </div>
-    <div class="pdiv"></div>
-    <div class="pnl">Video Lainnya</div>
-    <div class="lw" id="pnext"></div>
+    <iframe id="playerIframe" allowfullscreen style="display:none;width:100%;height:100%;border:none;" allow="autoplay; fullscreen"></iframe>
+  </div>
+  <div class="player-body">
+    <h2 class="player-title" id="playerTitle"></h2>
+    <div class="player-meta" id="playerMeta"></div>
+    <div class="quality-row" id="qualityRow"></div>
+    <div class="divider"></div>
+    <div class="section-title" style="margin-bottom:12px">Lainnya</div>
+    <div class="reko-list" id="playerNext"></div>
   </div>
 </div>
 
-<!-- SEARCH -->
+<!-- ===== SEARCH ===== -->
 <div class="page" id="page-search">
-  <div class="stop">
-    <div style="position:relative;">
-      <div class="sico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-      <input class="sbig" type="text" placeholder="Cari anime, film, kartun..." id="si" oninput="doSearch(this.value)">
-      <button class="sclr" id="sclr" onclick="clrSearch()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="search-top">
+    <div class="search-wrap">
+      <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <input class="search-big" type="text" placeholder="Cari anime, kartun, film..." id="searchInput" oninput="doSearch(this.value)">
     </div>
   </div>
-  <div class="sres" id="sres">
-    <div class="sempty">
-      <div class="sempty-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+  <div class="search-results" id="searchResults">
+    <div class="search-empty">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <p>Ketik untuk mulai pencarian</p>
     </div>
   </div>
 </div>
 
-<!-- SAVED -->
-<div class="page" id="page-saved">
-  <div class="svhead">
-    <div>
-      <div class="svtitle">Tersimpan</div>
-      <div class="svcount" id="svcount">0 video</div>
-    </div>
-    <div class="sv-clr" onclick="confirmClearAll()">Hapus Semua</div>
-  </div>
-  <div class="lw" id="svlist"></div>
-</div>
-
-<!-- PROFILE -->
-<div class="page" id="page-profile">
-  <div class="prhead">
-    <div class="prav">A</div>
-    <div class="prname">Alan</div>
-    <div class="prtag">IndoStream · Dubbing Indonesia</div>
-  </div>
-  <div class="strow">
-    <div class="stcard"><div class="stnum" id="st-sv">0</div><div class="stlbl">Disimpan</div></div>
-    <div class="stcard"><div class="stnum" id="st-lk">0</div><div class="stlbl">Disukai</div></div>
-    <div class="stcard"><div class="stnum" id="st-wt">0</div><div class="stlbl">Ditonton</div></div>
-  </div>
-
-  <div class="prsec">
-    <div class="prsec-t">Pengaturan</div>
-    <div class="pri" onclick="goPage('saved');updateBni('saved')">
-      <div class="priico" style="background:rgba(201,168,76,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--g)"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
-      <div style="flex:1"><div class="pril">Video Tersimpan</div><div class="prisub">Lihat semua yang kamu simpan</div></div>
-      <div class="prarr"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
-    </div>
-    <div class="pri" onclick="showQualityModal()">
-      <div class="priico" style="background:rgba(96,165,250,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--bl)"><polygon points="23,7 16,12 23,17 23,7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
-      <div style="flex:1"><div class="pril">Kualitas Video</div><div class="prisub" id="qualLabel">Auto</div></div>
-      <div class="prarr"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
-    </div>
-    <div class="pri" onclick="showShareModal()">
-      <div class="priico" style="background:rgba(74,222,128,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--gr)"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
-      <div style="flex:1"><div class="pril">Bagikan Aplikasi</div><div class="prisub">Share IndoStream ke teman</div></div>
-      <div class="prarr"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
-    </div>
-    <div class="pri" onclick="showAboutModal()">
-      <div class="priico" style="background:rgba(167,139,250,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--pu)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-      <div style="flex:1"><div class="pril">Tentang</div><div class="prisub">Versi & info aplikasi</div></div>
-      <div class="prarr"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
-    </div>
-  </div>
-
-  <div class="credit">
-    <div class="credit-logo">Indo<em>Stream</em></div>
-    <p>Platform streaming dubbing Indonesia<br>Dibuat dengan ❤️ oleh <strong>Alan</strong></p>
-    <div class="credit-v">v2.0 · 2026</div>
-  </div>
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bnav">
-  <div class="bni active" id="bni-home" onclick="goPage('home');updateBni('home')">
+<!-- ===== BOTTOM NAV ===== -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="goPage('home')">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
     <span>Home</span>
   </div>
-  <div class="bni" id="bni-search" onclick="goPage('search');updateBni('search')">
+  <div class="nav-item" id="nav-search" onclick="goPage('search')">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <span>Cari</span>
   </div>
-  <div class="bni" id="bni-saved" onclick="goPage('saved');updateBni('saved')">
+  <div class="nav-item" id="nav-bookmark" onclick="showToast('Coming soon!')">
     <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
     <span>Simpan</span>
-    <div class="bni-pip" id="sv-pip"></div>
   </div>
-  <div class="bni" id="bni-profile" onclick="goPage('profile');updateBni('profile')">
+  <div class="nav-item" id="nav-profile" onclick="showToast('Coming soon!')">
     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span>Profil</span>
   </div>
 </div>
 
 <script>
-const API='';
-let curPage='home',pstack=[],curCat='all';
-let heroVids=[],heroIdx=0,heroTimer=null;
-let stOut=null;
-let curId='',curTitle='',curThumb='';
+// ===== CONFIG =====
+const API = '';
 
-// STORAGE
-const getSaved=()=>{try{return JSON.parse(localStorage.getItem('sv')||'[]')}catch{return[]}};
-const setSaved=v=>{localStorage.setItem('sv',JSON.stringify(v));updStats();updPip();};
-const getLikes=()=>{try{return JSON.parse(localStorage.getItem('lk')||'[]')}catch{return[]}};
-const setLikes=v=>{localStorage.setItem('lk',JSON.stringify(v));updStats();};
-const getWatched=()=>{try{return JSON.parse(localStorage.getItem('wt')||'[]')}catch{return[]}};
-const addWatched=id=>{const w=getWatched();if(!w.includes(id)){w.unshift(id);if(w.length>100)w.pop();localStorage.setItem('wt',JSON.stringify(w));updStats();}};
+// ===== STATE =====
+let currentPage = 'home';
+let pageStack = [];
+let currentCat = 'all';
+let currentSources = [];
+let currentQuality = 0;
+let heroVideos = [];
+let heroIndex = 0;
+let searchTimeout = null;
+let latestVideos = [];
 
-function updStats(){
-  const sv=getSaved().length,lk=getLikes().length,wt=getWatched().length;
-  document.getElementById('st-sv').textContent=sv;
-  document.getElementById('st-lk').textContent=lk;
-  document.getElementById('st-wt').textContent=wt;
-  document.getElementById('svcount').textContent=sv+' video';
-}
-function updPip(){const n=getSaved().length;document.getElementById('sv-pip').className='bni-pip'+(n>0?' on':'');}
-
-// UTILS
-const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-const img=u=>u?`/api/image?url=${encodeURIComponent(u)}`:'';
-
-function toast(msg,dur=2400){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('on');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),dur);
+// ===== UTILS =====
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-function openMo(html){document.getElementById('mc').innerHTML=html;document.getElementById('mo').classList.add('on');}
-function closeMo(){document.getElementById('mo').classList.remove('on');}
+function errorCard(msg) {
+  return `<div style="padding:20px;color:var(--text-dim);font-size:13px;text-align:center">${msg}</div>`;
+}
 
-// INIT
-window.addEventListener('DOMContentLoaded',()=>{
-  updStats();updPip();
-  renderSaved();
-  fetchLatest('all');
-  fetchTrending();
+// ✅ FIX: proxy semua gambar lewat /api/image biar bypass hotlink protection
+function proxyImg(url) {
+  if (!url) return '';
+  return `/api/image?url=${encodeURIComponent(url)}`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2300);
+}
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', async () => {
+  await Promise.all([
+    fetchLatest('all'),
+    fetchTrending(),
+  ]);
 });
 
-// FETCH
-async function fetchLatest(cat='all'){
-  try{
-    const r=await fetch(`${API}/api/latest?category=${cat}&page=1`);
-    const d=await r.json();
-    if(!d.videos?.length){document.getElementById('latestCards').innerHTML=`<div style="padding:20px;color:var(--td);font-size:12px">Konten tidak tersedia</div>`;return;}
-    renderCards('latestCards',d.videos);
-    if(cat==='all'){heroVids=d.videos.slice(0,6);renderHero(heroVids[0]);startHero();}
-  }catch(e){document.getElementById('latestCards').innerHTML=`<div style="padding:20px;color:var(--td);font-size:12px">Gagal memuat. Cek koneksi.</div>`;}
-}
-async function fetchTrending(){
-  try{
-    const r=await fetch(`${API}/api/latest?category=all&page=2`);
-    const d=await r.json();
-    if(d.videos){renderCards('trendingCards',d.videos.slice(0,8));renderList('rekoList',d.videos.slice(0,6));}
-  }catch(e){}
+// ===== FETCH LATEST =====
+async function fetchLatest(cat = 'all') {
+  try {
+    const res = await fetch(`${API}/api/latest?category=${cat}&page=1`);
+    const data = await res.json();
+
+    if (!data.videos || data.videos.length === 0) {
+      document.getElementById('latestCards').innerHTML = errorCard('Gagal memuat konten');
+      return;
+    }
+
+    latestVideos = data.videos;
+    renderCards('latestCards', data.videos);
+
+    if (cat === 'all' && data.videos.length > 0) {
+      heroVideos = data.videos.slice(0, 5);
+      renderHero(heroVideos[0]);
+      startHeroRotation();
+    }
+  } catch (e) {
+    document.getElementById('latestCards').innerHTML = errorCard('Koneksi gagal. Coba lagi.');
+  }
 }
 
-// HERO
-function renderHero(v){
-  document.getElementById('hbg').style.backgroundImage=`url('${img(v.thumb)}')`;
-  const sv=getSaved();const isSv=sv.some(s=>s.id===v.id);
-  document.getElementById('hcon').innerHTML=`
-    <div class="hbadges">
-      <span class="hb hb-cat">${esc(v.catName)}</span>
-      <span class="hb hb-new">Baru</span>
-    </div>
-    <div class="htitle">${esc(v.title)}</div>
-    <div class="hmeta">
-      <span class="views">★ Indo Dub</span>
-      <span class="dot">·</span>
-      <span>${v.date||'2026'}</span>
-      <span class="dot">·</span>
-      <span>${v.views} views</span>
-    </div>
-    <div class="hbtns">
-      <button class="hbtn hbtn-play" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-        Tonton Sekarang
-      </button>
-      <button class="hbtn hbtn-bm" id="hero-bm-${esc(v.id)}" onclick="heroSave('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}','${esc(v.catName)}','${esc(v.date)}','${esc(v.views)}',this)">
-        <svg viewBox="0 0 24 24" fill="${isSv?'var(--g)':'none'}" stroke="${isSv?'var(--g)':'currentColor'}" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-      </button>
-    </div>`;
-  // Dots
-  const dc=document.getElementById('hdots');
-  dc.innerHTML=heroVids.map((_,i)=>`<div class="hdot${i===heroIdx?' active':''}"></div>`).join('');
-}
-function startHero(){
-  clearInterval(heroTimer);
-  if(heroVids.length<2)return;
-  heroTimer=setInterval(()=>{heroIdx=(heroIdx+1)%heroVids.length;renderHero(heroVids[heroIdx]);},6000);
-}
-function heroSave(id,title,thumb,catName,date,views,btn){
-  const sv=getSaved();const idx=sv.findIndex(s=>s.id===id);
-  if(idx>-1){sv.splice(idx,1);setSaved(sv);btn.querySelector('svg').setAttribute('fill','none');btn.querySelector('svg').setAttribute('stroke','currentColor');toast('Dihapus dari Simpan');}
-  else{sv.unshift({id,title,thumb,catName,date,views});setSaved(sv);btn.querySelector('svg').setAttribute('fill','var(--g)');btn.querySelector('svg').setAttribute('stroke','var(--g)');toast('✓ Disimpan!');}
-  renderSaved();
+async function fetchTrending() {
+  try {
+    const res = await fetch(`${API}/api/latest?category=all&page=2`);
+    const data = await res.json();
+    if (data.videos) renderCards('trendingCards', data.videos.slice(0, 8));
+    renderReko(data.videos ? data.videos.slice(0, 6) : []);
+  } catch (e) {
+    document.getElementById('trendingCards').innerHTML = errorCard('Gagal memuat');
+  }
 }
 
-// RENDER
-function renderCards(cid,vids){
-  const el=document.getElementById(cid);
-  if(!vids?.length){el.innerHTML=`<div style="padding:20px;color:var(--td);font-size:12px">Tidak ada konten</div>`;return;}
-  el.innerHTML=vids.map(v=>`
+// ===== HERO =====
+function renderHero(v) {
+  const bg = document.getElementById('heroBg');
+  // ✅ FIX: pakai proxyImg untuk background hero juga
+  bg.style.backgroundImage = `url('${proxyImg(v.thumb)}')`;
+
+  document.getElementById('heroContent').innerHTML = `
+    <div class="hero-poster">
+      <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\'/>'">
+    </div>
+    <div class="hero-info">
+      <div class="badge ongoing">${esc(v.catName)}</div>
+      <h1 class="hero-title">${esc(v.title)}</h1>
+      <div class="hero-meta">
+        <span>Dubbing Indonesia</span>
+        <span class="dot">·</span>
+        <span>${v.date || '2026'}</span>
+        <span class="dot">·</span>
+        <span>${v.views} views</span>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          Tonton Sekarang
+        </button>
+        <button class="btn btn-secondary" onclick="showToast('✓ Ditambahkan ke Bookmark')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Bookmark
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function startHeroRotation() {
+  if (heroVideos.length < 2) return;
+  setInterval(() => {
+    heroIndex = (heroIndex + 1) % heroVideos.length;
+    renderHero(heroVideos[heroIndex]);
+  }, 6000);
+}
+
+// ===== RENDER CARDS =====
+function renderCards(containerId, videos) {
+  const el = document.getElementById(containerId);
+  if (!videos || videos.length === 0) { el.innerHTML = errorCard('Tidak ada konten'); return; }
+  el.innerHTML = videos.map(v => `
     <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-      <div class="cthumb">
-        <img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#1e2026'">
-        <div class="cthumb-ov"></div>
-        <div class="cbadge">${esc(v.catName)}</div>
-        ${v.duration?`<div class="cdur">${esc(v.duration)}</div>`:''}
+      <div class="card-thumb">
+        <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
+        <div class="card-badge">${esc(v.catName)}</div>
       </div>
-      <div class="ctitle">${esc(v.title)}</div>
-      <div class="csub">${v.views} views</div>
-    </div>`).join('');
-}
-function renderList(cid,vids){
-  const el=document.getElementById(cid);
-  if(!vids?.length){el.innerHTML='';return;}
-  el.innerHTML=vids.map(v=>`
-    <div class="li" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-      <div class="lthumb"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
-      <div class="linfo">
-        <div class="ltitle">${esc(v.title)}</div>
-        <div class="lmeta"><span>${esc(v.catName)}</span><span>·</span><span class="lv">${v.views} views</span><span>·</span><span>${v.date}</span></div>
-      </div>
-      <div class="larr"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
-    </div>`).join('');
+      <div class="card-title">${esc(v.title)}</div>
+      <div class="card-sub">${v.views} views · ${v.date}</div>
+    </div>
+  `).join('');
 }
 
-// PLAYER
-async function openPlayer(id,title,thumb){
-  curId=id;curTitle=title;curThumb=thumb;
-  document.getElementById('pht').textContent=title;
-  document.getElementById('ptitle').textContent=title;
-  document.getElementById('ploading').style.display='flex';
-  document.getElementById('pif').style.display='none';
-  document.getElementById('pnext').innerHTML='';
-  updPlayerBtns();
-  pstack.push(curPage);
-  goPage('player');updateBni('');
-  window.scrollTo(0,0);
-  addWatched(id);
-  const sc=id.replace(/\.html$/,'').split('_').pop();
-  const iframe=document.getElementById('pif');
-  iframe.src=`https://www.dubbindo.site/embed/${sc}`;
-  iframe.onload=()=>{document.getElementById('ploading').style.display='none';iframe.style.display='block';};
-  setTimeout(()=>{if(document.getElementById('ploading').style.display!=='none'){document.getElementById('ploading').style.display='none';iframe.style.display='block';}},4000);
-  try{
-    const r=await fetch(`${API}/api/latest?category=all&page=1`);
-    const d=await r.json();
-    const others=(d.videos||[]).filter(v=>v.id!==id).slice(0,6);
-    document.getElementById('pnext').innerHTML=others.map(v=>`
-      <div class="li" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-        <div class="lthumb"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
-        <div class="linfo"><div class="ltitle">${esc(v.title)}</div><div class="lmeta"><span>${esc(v.catName)}</span><span>·</span><span class="lv">${v.views} views</span></div></div>
-        <div class="larr"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
-      </div>`).join('');
-  }catch(e){}
-}
-function updPlayerBtns(){
-  const lk=getLikes(),sv=getSaved();
-  document.getElementById('likeBtn').className='pact'+(lk.some(l=>l.id===curId)?' liked':'');
-  document.getElementById('saveBtn').className='pact'+(sv.some(s=>s.id===curId)?' saved':'');
-}
-function toggleLike(){
-  const lk=getLikes();const idx=lk.findIndex(l=>l.id===curId);
-  if(idx>-1){lk.splice(idx,1);setLikes(lk);toast('Dihapus dari Disukai');}
-  else{lk.unshift({id:curId,title:curTitle,thumb:curThumb});setLikes(lk);toast('❤️ Ditambahkan ke Disukai');}
-  updPlayerBtns();
-}
-function toggleSavePlayer(){
-  const sv=getSaved();const idx=sv.findIndex(s=>s.id===curId);
-  if(idx>-1){sv.splice(idx,1);setSaved(sv);toast('Dihapus dari Simpan');}
-  else{sv.unshift({id:curId,title:curTitle,thumb:curThumb,catName:'Dubbing Indonesia',date:'',views:''});setSaved(sv);toast('✓ Disimpan!');}
-  updPlayerBtns();renderSaved();
-}
-function shareVideo(){
-  const url=location.href;
-  if(navigator.share){navigator.share({title:curTitle,text:`Tonton "${curTitle}" di IndoStream!`,url});}
-  else{navigator.clipboard?.writeText(url).then(()=>toast('🔗 Link disalin!'));}
-}
-function showMoreOpts(){
-  openMo(`
-    <div class="mt">Opsi Video</div>
-    <div class="mopt" onclick="toggleSavePlayer();closeMo()">
-      <div class="moic" style="background:rgba(201,168,76,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--g)"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
-      <div><div class="mol">Simpan Video</div><div class="mos">Tambah ke daftar simpan</div></div>
+function renderReko(videos) {
+  const el = document.getElementById('rekoList');
+  if (!videos || videos.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = videos.map(v => `
+    <div class="reko-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+      <div class="reko-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
+      <div class="reko-info">
+        <div class="reko-title">${esc(v.title)}</div>
+        <div class="reko-meta">${esc(v.catName)} · ${v.date}</div>
+      </div>
+      <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
     </div>
-    <div class="mopt" onclick="shareVideo();closeMo()">
-      <div class="moic" style="background:rgba(74,222,128,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--gr)"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
-      <div><div class="mol">Bagikan</div><div class="mos">Share ke aplikasi lain</div></div>
-    </div>
-    <div class="mopt" onclick="navigator.clipboard?.writeText('https://www.dubbindo.site/embed/'+curId.replace(/\\.html$/,'').split('_').pop()).then(()=>toast('✓ Link embed disalin!'));closeMo()">
-      <div class="moic" style="background:rgba(96,165,250,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--bl)"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg></div>
-      <div><div class="mol">Salin Link Embed</div><div class="mos">Untuk di-embed di website</div></div>
-    </div>
-  `);
+  `).join('');
 }
 
-// SAVED
-function renderSaved(){
-  const sv=getSaved();
-  document.getElementById('svcount').textContent=sv.length+' video';
-  const el=document.getElementById('svlist');
-  if(!sv.length){
-    el.innerHTML=`<div class="svempty"><div class="svempty-ic"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div><h3>Belum ada yang disimpan</h3><p>Simpan film favoritmu agar<br>mudah ditemukan lagi</p></div>`;
+// ===== PLAYER =====
+async function openPlayer(videoId, title, thumb) {
+  document.getElementById('playerHeaderTitle').textContent = title;
+  document.getElementById('playerTitle').textContent = title;
+  document.getElementById('playerMeta').textContent = 'Dubbing Indonesia · IndoStream';
+  document.getElementById('playerLoading').style.display = 'flex';
+  document.getElementById('playerIframe').style.display = 'none';
+  document.getElementById('qualityRow').innerHTML = '';
+  document.getElementById('playerNext').innerHTML = '';
+
+  pageStack.push(currentPage);
+  goPage('player');
+  window.scrollTo(0, 0);
+
+  const shortCode = videoId.replace(/\.html$/, '').split('_').pop();
+  const embedUrl = `https://www.dubbindo.site/embed/${shortCode}`;
+
+  const iframe = document.getElementById('playerIframe');
+  iframe.src = embedUrl;
+  iframe.onload = () => {
+    document.getElementById('playerLoading').style.display = 'none';
+    iframe.style.display = 'block';
+  };
+  iframe.onerror = () => {
+    document.getElementById('playerLoading').innerHTML = `<p style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px">Gagal memuat video.<br>Coba lagi nanti.</p>`;
+  };
+
+  setTimeout(() => {
+    if (document.getElementById('playerLoading').style.display !== 'none') {
+      document.getElementById('playerLoading').style.display = 'none';
+      iframe.style.display = 'block';
+    }
+  }, 3000);
+
+  loadNextVideos(videoId);
+}
+
+async function loadNextVideos(currentId) {
+  try {
+    const res = await fetch(`${API}/api/latest?category=all&page=1`);
+    const data = await res.json();
+    const others = (data.videos || []).filter(v => v.id !== currentId).slice(0, 5);
+    document.getElementById('playerNext').innerHTML = others.map(v => `
+      <div class="reko-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+        <div class="reko-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
+        <div class="reko-info">
+          <div class="reko-title">${esc(v.title)}</div>
+          <div class="reko-meta">${esc(v.catName)} · ${v.date}</div>
+        </div>
+        <div class="chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+// ===== SEARCH =====
+function doSearch(q) {
+  clearTimeout(searchTimeout);
+  const container = document.getElementById('searchResults');
+
+  if (!q.trim()) {
+    container.innerHTML = `<div class="search-empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Ketik untuk mulai pencarian</p></div>`;
     return;
   }
-  el.innerHTML=sv.map(v=>`
-    <div class="li">
-      <div class="lthumb" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
-      <div class="linfo" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-        <div class="ltitle">${esc(v.title)}</div>
-        <div class="lmeta"><span>${esc(v.catName||'Dubbing Indonesia')}</span></div>
-      </div>
-      <div class="sv-del" onclick="delSaved('${esc(v.id)}')"><svg viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg></div>
-    </div>`).join('');
-}
-function delSaved(id){const sv=getSaved().filter(s=>s.id!==id);setSaved(sv);renderSaved();toast('Dihapus dari Simpan');}
-function confirmClearAll(){
-  if(!getSaved().length)return;
-  openMo(`
-    <div class="mt">Hapus Semua?</div>
-    <p style="font-size:13px;color:var(--td);margin-bottom:20px">Semua ${getSaved().length} video tersimpan akan dihapus.</p>
-    <div class="mbtn mbtn-red" onclick="setSaved([]);renderSaved();closeMo();toast('Semua dihapus')">Ya, Hapus Semua</div>
-    <div class="mbtn mbtn-gray" onclick="closeMo()">Batal</div>
-  `);
+
+  container.innerHTML = `<div class="search-empty"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:12px">Mencari "${esc(q)}"...</p></div>`;
+
+  searchTimeout = setTimeout(async () => {
+    try {
+      const res = await fetch(`${API}/api/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+
+      if (!data.videos || data.videos.length === 0) {
+        container.innerHTML = `<div class="search-empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Tidak ditemukan untuk "<b>${esc(q)}</b>"</p></div>`;
+        return;
+      }
+
+      container.innerHTML = data.videos.map(v => `
+        <div class="search-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+          <div class="search-item-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
+          <div class="search-item-info">
+            <div class="title">${esc(v.title)}</div>
+            <div class="meta">${esc(v.catName)} · ${v.date} · ${v.views} views</div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      container.innerHTML = `<div class="search-empty"><p>Gagal mencari. Cek koneksi internet.</p></div>`;
+    }
+  }, 500);
 }
 
-// SEARCH
-let stimer=null;
-function doSearch(q){
-  clearTimeout(stimer);
-  const c=document.getElementById('sres');
-  document.getElementById('sclr').className='sclr'+(q.trim()?' on':'');
-  if(!q.trim()){c.innerHTML=`<div class="sempty"><div class="sempty-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><p>Ketik untuk mulai pencarian</p></div>`;return;}
-  c.innerHTML=`<div class="sempty"><div class="spin" style="margin:0 auto"></div><p style="margin-top:14px;font-size:12px;color:var(--td)">Mencari...</p></div>`;
-  stimer=setTimeout(async()=>{
-    try{
-      const r=await fetch(`${API}/api/search?q=${encodeURIComponent(q)}`);
-      const d=await r.json();
-      if(!d.videos?.length){c.innerHTML=`<div class="sempty"><div class="sempty-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><p>Tidak ada hasil untuk<br><strong style="color:var(--tm)">"${esc(q)}"</strong></p></div>`;return;}
-      c.innerHTML=d.videos.map(v=>`
-        <div class="si" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-          <div class="sithumb"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
-          <div><div class="sititle">${esc(v.title)}</div><div class="simeta">${esc(v.catName)} · ${v.date} · ${v.views} views</div></div>
-        </div>`).join('');
-    }catch(e){c.innerHTML=`<div class="sempty"><p style="color:var(--td)">Gagal mencari. Cek koneksi.</p></div>`;}
-  },450);
+// ===== NAVIGATION =====
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  currentPage = name;
 }
-function clrSearch(){document.getElementById('si').value='';doSearch('');document.getElementById('si').focus();}
 
-// NAV
-function goPage(name){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+name)?.classList.add('active');
-  curPage=name;
-  if(name==='profile')updStats();
-  if(name==='saved'){renderSaved();updStats();}
+function goBack() {
+  const prev = pageStack.pop();
+  if (prev) {
+    const iframe = document.getElementById('playerIframe');
+    if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
+    goPage(prev);
+  } else {
+    goPage('home');
+  }
 }
-function updateBni(name){
-  document.querySelectorAll('.bni').forEach(n=>n.classList.remove('active'));
-  if(name)document.getElementById('bni-'+name)?.classList.add('active');
-}
-function goBack(){
-  const prev=pstack.pop();
-  const iframe=document.getElementById('pif');
-  if(iframe){iframe.src='';iframe.style.display='none';}
-  const pg=prev||'home';
-  goPage(pg);updateBni(pg);
-}
-function filterCat(el,cat){
-  document.querySelectorAll('#chips .chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');curCat=cat;
-  document.getElementById('latestCards').innerHTML=[...Array(5)].map(()=>`<div class="card"><div class="cthumb sk" style="aspect-ratio:2/3"></div><div class="sk" style="height:11px;margin-top:8px;border-radius:4px"></div></div>`).join('');
+
+function filterCat(el, cat) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentCat = cat;
+  document.getElementById('latestCards').innerHTML = [...Array(5)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div></div>`).join('');
   fetchLatest(cat);
 }
-function loadMore(){
-  toast('Memuat lebih banyak...');
-  fetch(`${API}/api/latest?category=${curCat}&page=2`).then(r=>r.json()).then(d=>{
-    if(d.videos?.length){
-      document.getElementById('latestCards').innerHTML+=d.videos.map(v=>`
-        <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-          <div class="cthumb"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"><div class="cthumb-ov"></div><div class="cbadge">${esc(v.catName)}</div></div>
-          <div class="ctitle">${esc(v.title)}</div><div class="csub">${v.views} views</div>
-        </div>`).join('');
-      toast(`+${d.videos.length} konten dimuat`);
-    }
-  }).catch(()=>toast('Gagal memuat'));
-}
-function navSH(val){
-  if(val.length>0){goPage('search');updateBni('search');document.getElementById('si').value=val;doSearch(val);}
+
+function loadMore() {
+  showToast('Memuat lebih banyak...');
+  fetch(`${API}/api/latest?category=${currentCat}&page=2`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.videos && data.videos.length > 0) {
+        const container = document.getElementById('latestCards');
+        container.innerHTML += data.videos.map(v => `
+          <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+            <div class="card-thumb">
+              <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
+              <div class="card-badge">${esc(v.catName)}</div>
+            </div>
+            <div class="card-title">${esc(v.title)}</div>
+            <div class="card-sub">${v.views} views · ${v.date}</div>
+          </div>
+        `).join('');
+        showToast(`+${data.videos.length} konten dimuat`);
+      }
+    }).catch(() => showToast('Gagal memuat'));
 }
 
-// PROFILE MODALS
-function showQualityModal(){
-  const cur=localStorage.getItem('quality')||'Auto';
-  openMo(`
-    <div class="mt">Kualitas Video</div>
-    ${['Auto','1080p','720p','480p','360p'].map(q=>`
-      <div class="mopt" onclick="setQuality('${q}');closeMo()">
-        <div class="moic" style="background:${q===cur?'rgba(201,168,76,.1)':'rgba(255,255,255,.04)'}">
-          <svg viewBox="0 0 24 24" style="stroke:${q===cur?'var(--g)':'var(--td)'}"><polygon points="23,7 16,12 23,17 23,7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-        </div>
-        <div><div class="mol" style="color:${q===cur?'var(--g)':'var(--t)'}">${q}</div><div class="mos">${q==='Auto'?'Sesuaikan otomatis':q+' HD'}</div></div>
-        ${q===cur?'<svg width="16" height="16" viewBox="0 0 24 24" style="stroke:var(--g);fill:none;stroke-width:2.5;flex-shrink:0"><polyline points="20,6 9,17 4,12"/></svg>':''}
-      </div>`).join('')}
-  `);
+function navSearchHandler(val) {
+  if (val.length > 0) {
+    goPage('search');
+    document.getElementById('searchInput').value = val;
+    doSearch(val);
+  }
 }
-function setQuality(q){localStorage.setItem('quality',q);document.getElementById('qualLabel').textContent=q;toast('✓ Kualitas diset ke '+q);}
-function showShareModal(){
-  const url='https://indostream-one.vercel.app';
-  openMo(`
-    <div class="mt">Bagikan IndoStream</div>
-    <div class="mopt" onclick="navigator.clipboard?.writeText('${url}').then(()=>toast('🔗 Link disalin!'));closeMo()">
-      <div class="moic" style="background:rgba(201,168,76,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--g)"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
-      <div><div class="mol">Salin Link</div><div class="mos">${url}</div></div>
-    </div>
-    <div class="mopt" onclick="navigator.share?.({title:'IndoStream',url:'${url}'});closeMo()">
-      <div class="moic" style="background:rgba(74,222,128,.1)"><svg viewBox="0 0 24 24" style="stroke:var(--gr)"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
-      <div><div class="mol">Share ke Aplikasi</div><div class="mos">Buka menu share sistem</div></div>
-    </div>
-  `);
-}
-function showAboutModal(){
-  openMo(`
-    <div style="text-align:center;padding:10px 0 16px">
-      <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;margin-bottom:6px">Indo<span style="color:var(--g)">Stream</span></div>
-      <div style="display:inline-block;font-size:9px;color:var(--td);letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:16px">v2.0 · 2026</div>
-      <p style="font-size:13px;color:var(--td);line-height:1.8">Platform streaming dubbing Indonesia<br>Nonton anime & film favoritmu gratis</p>
-      <div style="margin-top:16px;padding:14px;background:var(--b3);border-radius:12px;font-size:12px;color:var(--td)">
-        Dibuat dengan ❤️ oleh <strong style="color:var(--g);font-size:14px;">Alan</strong>
-      </div>
-    </div>
-  `);
-}
-
-// Init quality label
-document.getElementById('qualLabel').textContent=localStorage.getItem('quality')||'Auto';
 </script>
 </body>
 </html>
