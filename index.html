@@ -413,17 +413,12 @@ input,button{font-family:inherit;}
 <!-- PLAYER -->
 <div class="page" id="page-player">
   <div class="ptop"><button class="pbk" onclick="goBack()"><svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg></button><div class="ptop-t" id="pht">Memuat...</div></div>
-  <div class="pframe" id="pframe" style="cursor:pointer;position:relative;" onclick="openWatch()">
-    <img id="pthumb-img" src="" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.55;">
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-      <div style="width:62px;height:62px;background:var(--ac);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(232,93,38,.6);">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><polygon points="6,3 20,12 6,21"/></svg>
-      </div>
-      <div style="text-align:center;">
-        <div style="font-size:13px;font-weight:700;color:#fff;">Tap untuk Tonton</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">Buka di browser</div>
-      </div>
+  <div class="pframe" id="pframe">
+    <div class="ploading" id="ploading">
+      <div class="spin"></div>
+      <span style="font-size:12px;color:var(--td);margin-top:4px">Memuat video...</span>
     </div>
+    <iframe id="pif" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" style="display:none;width:100%;height:100%;border:none;"></iframe>
   </div>
   </div>
   <div class="pbody">
