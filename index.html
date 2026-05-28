@@ -413,7 +413,22 @@ input,button{font-family:inherit;}
 <!-- PLAYER -->
 <div class="page" id="page-player">
   <div class="ptop"><button class="pbk" onclick="goBack()"><svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg></button><div class="ptop-t" id="pht">Memuat...</div></div>
-  <div class="pframe"><div class="ploading" id="ploading"><div class="spin"></div><span style="font-size:12px;color:var(--td)">Memuat video...</span></div><iframe id="pif" allowfullscreen allow="autoplay;fullscreen" style="display:none;width:100%;height:100%;border:none;"></iframe></div>
+  <div class="pframe" id="pframe">
+    <div class="ploading" id="ploading">
+      <div class="spin"></div>
+      <span style="font-size:12px;color:var(--td);margin-top:4px">Memuat video...</span>
+    </div>
+    <iframe id="pif" allowfullscreen allow="autoplay;fullscreen;encrypted-media" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation" style="display:none;width:100%;height:100%;border:none;"></iframe>
+    <div id="pframe-err" style="display:none;position:absolute;inset:0;background:#000;flex-direction:column;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16 10,8" fill="var(--ac)" stroke="none"/></svg>
+      <div style="font-size:14px;font-weight:700">Tonton di Browser</div>
+      <div style="font-size:12px;color:var(--td);line-height:1.6">Video tidak bisa diputar di dalam app.<br>Klik tombol di bawah untuk nonton.</div>
+      <button id="watchBtn" onclick="openWatch()" style="background:var(--ac);color:#fff;border:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        Tonton Sekarang
+      </button>
+    </div>
+  </div>
   <div class="pbody">
     <div class="ptitle" id="ptitle"></div>
     <div class="pacts">
@@ -574,21 +589,23 @@ function confirmClr(){openMo(`<div class="mt">Hapus Semua?</div><p style="font-s
 function clrLib(){if(ltab==='saved')sSv([]);else if(ltab==='liked')sLk([]);else{localStorage.setItem('wt','[]');updSt();}renderLib();toast('Semua dihapus');}
 
 // PLAYER
+let curWatchUrl="";
+function openWatch(){if(curWatchUrl)window.open(curWatchUrl,"_blank");}
+function showWatchBtn(){document.getElementById("ploading").style.display="none";document.getElementById("pframe-err").style.removeProperty("display");}
+
 async function openPlayer(id,title,thumb){
   cid=id;ctitle=title;cthumb=thumb;
   document.getElementById('pht').textContent=title;
   document.getElementById('ptitle').textContent=title;
-  document.getElementById('ploading').style.display='flex';
+  document.getElementById('ploading').style.display='none';
   document.getElementById('pif').style.display='none';
   document.getElementById('pnext').innerHTML='';
   updPBtns();
   pstack.push(cp);goPage('player');setNav('');
   window.scrollTo(0,0);addWt();renderLib();
   const sc=id.replace(/\.html$/,'').split('_').pop();
-  const iframe=document.getElementById('pif');
-  iframe.src=`https://www.dubbindo.site/embed/${sc}`;
-  iframe.onload=()=>{document.getElementById('ploading').style.display='none';iframe.style.display='block';};
-  setTimeout(()=>{if(document.getElementById('ploading').style.display!=='none'){document.getElementById('ploading').style.display='none';iframe.style.display='block';}},4000);
+  curWatchUrl=`https://www.dubbindo.site/watch/${id}`;
+  showWatchBtn();
   try{const r=await fetch(`${API}/api/latest?category=all&page=1`);const d=await r.json();const o=(d.videos||[]).filter(v=>v.id!==id).slice(0,6);document.getElementById('pnext').innerHTML=o.map(v=>`<div class="gc3" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')"><div class="gc3-img"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none'"><div class="gc3-ov"></div></div><div class="gc3-title">${esc(v.title)}</div></div>`).join('');}catch(e){}
 }
 function updPBtns(){document.getElementById('likeBtn').className='pa'+(gLk().some(l=>l.id===cid)?' liked':'');document.getElementById('saveBtn').className='pa'+(gSv().some(s=>s.id===cid)?' saved':'');}
