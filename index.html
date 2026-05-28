@@ -480,6 +480,16 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 function openMo(h){document.getElementById('mc').innerHTML=h;document.getElementById('mo').classList.add('on');}
 function closeMo(){document.getElementById('mo').classList.remove('on');}
 
+window.addEventListener('click', e => {
+  const card = e.target.closest('[data-id]');
+  if (card) {
+    const id = card.dataset.id;
+    const title = card.dataset.title;
+    const thumb = card.dataset.thumb;
+    if (id) openPlayer(id, title, thumb);
+  }
+});
+
 window.addEventListener('DOMContentLoaded',()=>{
   updSt();updDot();renderLib();
   fetchLatest('all');fetchTrending();
@@ -520,7 +530,7 @@ function renderCW(){
   if(!w.length){document.getElementById('cwSec').style.display='none';return;}
   document.getElementById('cwSec').style.display='';
   document.getElementById('cwRow').innerHTML=w.map((v,i)=>`
-    <div class="cw-c" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+    <div class="cw-c" data-id="${esc(v.id)}" data-title="${esc(v.title)}" data-thumb="${esc(v.thumb)}">
       <img class="cw-img" src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none'">
       <div class="cw-prog"><div class="cw-bar" style="width:${20+i*14}%"></div></div>
       <div class="cw-info"><div class="cw-ep">Terakhir ditonton</div><div class="cw-t">${esc(v.title)}</div></div>
@@ -531,7 +541,7 @@ function renderG3(cid,vids){
   const el=document.getElementById(cid);
   if(!vids?.length){el.innerHTML=`<div style="grid-column:1/-1;padding:20px;color:var(--td);font-size:12px;text-align:center">Tidak ada konten</div>`;return;}
   el.innerHTML=vids.map(v=>`
-    <div class="gc3" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+    <div class="gc3" data-id="${esc(v.id)}" data-title="${esc(v.title)}" data-thumb="${esc(v.thumb)}">
       <div class="gc3-img">
         <img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none'">
         <div class="gc3-ov"></div>
@@ -547,7 +557,7 @@ function renderRow(cid,vids){
   const el=document.getElementById(cid);
   if(!vids?.length){el.innerHTML='';return;}
   el.innerHTML=vids.map(v=>`
-    <div class="rc" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+    <div class="rc" data-id="${esc(v.id)}" data-title="${esc(v.title)}" data-thumb="${esc(v.thumb)}">
       <div class="rc-img">
         <img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none'">
         <div class="rc-ov"></div>
@@ -574,7 +584,7 @@ function renderLib(){
   const el=document.getElementById('libC');
   let items=ltab==='saved'?gSv():ltab==='liked'?gLk():gWt();
   if(!items.length){const lbl={saved:'Tersimpan',liked:'Disukai',history:'History'};el.innerHTML=`<div class="lib-empty"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><h3>Belum ada ${lbl[ltab]}</h3><p>Video yang kamu ${ltab==='history'?'tonton':'simpan'} akan muncul di sini</p></div>`;return;}
-  el.innerHTML=items.map(v=>`<div class="lib-item"><div class="li-thumb" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div><div class="li-info" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')"><div class="li-title">${esc(v.title)}</div><div class="li-meta">${esc(v.catName||'Dubbing Indonesia')}</div></div><div class="li-del" onclick="delLib('${esc(v.id)}')"><svg viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg></div></div>`).join('');
+  el.innerHTML=items.map(v=>`<div class="lib-item"><div class="li-thumb" data-id="${esc(v.id)}" data-title="${esc(v.title)}" data-thumb="${esc(v.thumb)}"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div><div class="li-info" data-id="${esc(v.id)}" data-title="${esc(v.title)}" data-thumb="${esc(v.thumb)}"><div class="li-title">${esc(v.title)}</div><div class="li-meta">${esc(v.catName||'Dubbing Indonesia')}</div></div><div class="li-del" onclick="delLib('${esc(v.id)}')"><svg viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg></div></div>`).join('');
 }
 function delLib(id){if(ltab==='saved')sSv(gSv().filter(s=>s.id!==id));else if(ltab==='liked')sLk(gLk().filter(l=>l.id!==id));else{const w=gWt().filter(w=>w.id!==id);localStorage.setItem('wt',JSON.stringify(w));updSt();}renderLib();toast('Dihapus');}
 function confirmClr(){openMo(`<div class="mt">Hapus Semua?</div><p style="font-size:13px;color:var(--td);margin-bottom:18px">Semua item di tab ini akan dihapus.</p><div class="mbtn mbtn-red" onclick="clrLib();closeMo()">Ya, Hapus</div><div class="mbtn mbtn-gray" onclick="closeMo()">Batal</div>`);}
@@ -635,7 +645,7 @@ function doSearch(q){
   stimer=setTimeout(async()=>{
     try{const r=await fetch(`${API}/api/search?q=${encodeURIComponent(q)}`);const d=await r.json();
     if(!d.videos?.length){c.innerHTML=`<div class="s-empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Tidak ada hasil untuk <strong style="color:var(--t)">"${esc(q)}"</strong></p></div>`;return;}
-    c.innerHTML=d.videos.map(v=>`<div class="s-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')"><div class="s-thumb"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div><div><div class="s-ttl">${esc(v.title)}</div><div class="s-meta">${esc(v.catName)} · ${v.views} views · ${v.date}</div></div></div>`).join('');}
+    c.innerHTML=d.videos.map(v=>`<div class="s-item" data-id="${esc(v.id)}" data-title="${esc(v.title)}" data-thumb="${esc(v.thumb)}"><div class="s-thumb"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div><div><div class="s-ttl">${esc(v.title)}</div><div class="s-meta">${esc(v.catName)} · ${v.views} views · ${v.date}</div></div></div>`).join('');}
     catch(e){c.innerHTML=`<div class="s-empty"><p style="color:var(--td)">Gagal mencari. Cek koneksi.</p></div>`;}
   },450);
 }
