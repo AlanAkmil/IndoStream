@@ -4,261 +4,656 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IndoStream – Dubbing Indonesia</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 :root {
   --gold: #c9a84c;
   --gold-light: #e8c97a;
   --gold-dim: #7a6030;
-  --bg: #0a0a0a;
-  --bg2: #111111;
-  --bg3: #1a1a1a;
-  --bg4: #222222;
+  --gold-glow: rgba(201,168,76,0.15);
+  --bg: #080808;
+  --bg2: #0f0f0f;
+  --bg3: #181818;
+  --bg4: #202020;
+  --bg5: #2a2a2a;
   --text: #f0ece0;
   --text-dim: #888880;
+  --text-muted: #555550;
   --green: #50c878;
-  --radius: 10px;
+  --red: #e05050;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --nav-h: 58px;
+  --bot-h: 64px;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
 ::-webkit-scrollbar { width:3px; }
-::-webkit-scrollbar-track { background:var(--bg2); }
+::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--gold-dim); border-radius:2px; }
+img { user-select:none; -webkit-user-drag:none; }
 
-/* NAV */
+/* ───── NAV ───── */
 nav {
-  position:fixed; top:0; left:0; right:0; z-index:200;
+  position:fixed; top:0; left:0; right:0; z-index:300;
+  height:var(--nav-h);
   display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px;
-  background:rgba(10,10,10,0.92);
-  border-bottom:1px solid rgba(201,168,76,0.08);
-  backdrop-filter:blur(14px);
+  padding:0 16px;
+  background:rgba(8,8,8,0.95);
+  border-bottom:1px solid rgba(201,168,76,0.1);
+  backdrop-filter:blur(20px);
 }
-.logo { font-family:'Cinzel',serif; font-size:20px; font-weight:700; letter-spacing:1px; cursor:pointer; }
-.logo span { color:var(--gold); }
-.nav-right { display:flex; align-items:center; gap:10px; }
+.logo {
+  font-family:'Cinzel',serif; font-size:19px; font-weight:700;
+  letter-spacing:1.5px; cursor:pointer;
+  background:linear-gradient(135deg, #f0ece0, var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.logo em { font-style:normal; -webkit-text-fill-color:var(--gold); }
+
+.nav-right { display:flex; align-items:center; gap:8px; }
 .nav-search-wrap { position:relative; }
 .nav-search {
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(201,168,76,0.18);
-  border-radius:20px; padding:7px 12px 7px 32px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(201,168,76,0.15);
+  border-radius:22px;
+  padding:8px 12px 8px 34px;
   color:var(--text); font-family:'DM Sans',sans-serif; font-size:12px;
-  width:140px; outline:none; transition:all .3s;
+  width:130px; outline:none; transition:all .3s ease;
 }
-.nav-search:focus { border-color:var(--gold); width:180px; background:rgba(201,168,76,0.06); }
-.nav-search::placeholder { color:var(--text-dim); }
-.nav-search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.4; }
-.nav-search-icon svg { width:14px; height:14px; stroke:var(--text); fill:none; stroke-width:2; }
+.nav-search:focus {
+  border-color:var(--gold); width:175px;
+  background:rgba(201,168,76,0.06);
+  box-shadow:0 0 0 3px rgba(201,168,76,0.08);
+}
+.nav-search::placeholder { color:var(--text-muted); }
+.nav-search-icon {
+  position:absolute; left:10px; top:50%; transform:translateY(-50%);
+  pointer-events:none;
+}
+.nav-search-icon svg { width:14px; height:14px; stroke:var(--text-dim); fill:none; stroke-width:2; }
 
-/* PAGES */
-.page { display:none; padding-bottom:75px; animation:fadeIn .25s ease; }
-.page.active { display:block; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+/* ───── PAGES ───── */
+.page { display:none; padding-top:var(--nav-h); padding-bottom:calc(var(--bot-h) + 8px); }
+.page.active { display:block; animation:fadeIn .22s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-/* HERO */
+/* ───── HERO ───── */
 .hero {
-  position:relative; min-height:95vh;
-  display:flex; align-items:flex-end; padding-bottom:36px;
+  position:relative; min-height:92vh;
+  display:flex; align-items:flex-end; padding-bottom:32px;
   overflow:hidden;
 }
 .hero-bg {
-  position:absolute; inset:0;
+  position:absolute; inset:-6px;
   background-size:cover; background-position:center top;
-  filter:blur(3px) brightness(0.3);
-  transform:scale(1.05);
-  transition:background-image .5s ease;
+  filter:blur(4px) brightness(0.28);
+  transition:background-image .6s ease;
 }
-.hero-overlay {
+.hero-gradient {
   position:absolute; inset:0;
-  background:linear-gradient(to bottom, rgba(10,10,10,.2) 0%, rgba(10,10,10,.5) 55%, rgba(10,10,10,1) 100%);
+  background:linear-gradient(
+    160deg,
+    rgba(8,8,8,0.1) 0%,
+    rgba(8,8,8,0.3) 40%,
+    rgba(8,8,8,0.85) 70%,
+    rgba(8,8,8,1) 100%
+  );
 }
-.hero-content { position:relative; z-index:2; width:100%; padding:0 18px; display:flex; gap:16px; align-items:flex-end; }
+/* golden top accent */
+.hero-accent {
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity:0.6;
+}
+.hero-content { position:relative; z-index:2; width:100%; padding:0 16px; display:flex; gap:14px; align-items:flex-end; }
 .hero-poster {
-  width:105px; flex-shrink:0; border-radius:10px; overflow:hidden;
-  border:2px solid rgba(201,168,76,.4); box-shadow:0 10px 40px rgba(0,0,0,.7);
+  width:100px; flex-shrink:0; border-radius:10px; overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.8), 0 0 0 1px rgba(201,168,76,0.3);
   animation:slideUp .5s ease both;
 }
 .hero-poster img { width:100%; display:block; }
-.hero-info { flex:1; animation:slideUp .5s .1s ease both; }
-@keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+.hero-info { flex:1; animation:slideUp .5s .12s ease both; }
+@keyframes slideUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
 
 .badge {
   display:inline-flex; align-items:center; gap:5px;
-  background:rgba(201,168,76,.12); border:1px solid var(--gold);
-  border-radius:20px; padding:3px 10px; font-size:10px; font-weight:600;
-  color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;
+  background:rgba(201,168,76,0.1);
+  border:1px solid rgba(201,168,76,0.4);
+  border-radius:20px; padding:3px 10px;
+  font-size:10px; font-weight:600; color:var(--gold);
+  letter-spacing:1.2px; text-transform:uppercase; margin-bottom:8px;
 }
-.badge.ongoing::before { content:''; width:6px; height:6px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+.badge-dot {
+  width:6px; height:6px; background:var(--green);
+  border-radius:50%; animation:pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(1.5)} }
 
-.hero-title { font-family:'Cinzel',serif; font-size:24px; font-weight:700; line-height:1.2; margin-bottom:8px; text-shadow:0 2px 12px rgba(0,0,0,.6); }
-.hero-meta { font-size:11px; color:var(--text-dim); margin-bottom:18px; display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
-.hero-meta .dot { color:var(--gold-dim); }
+.hero-title {
+  font-family:'Cinzel',serif; font-size:22px; font-weight:700;
+  line-height:1.22; margin-bottom:8px;
+  text-shadow:0 2px 16px rgba(0,0,0,.7);
+}
+.hero-meta {
+  font-size:11px; color:var(--text-dim); margin-bottom:16px;
+  display:flex; gap:5px; flex-wrap:wrap; align-items:center;
+}
+.dot { color:var(--gold-dim); }
 
-.btn-group { display:flex; flex-direction:column; gap:9px; }
+.btn-group { display:flex; flex-direction:column; gap:8px; }
 .btn {
   display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:12px 18px; border-radius:10px; font-family:'DM Sans',sans-serif;
-  font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all .25s;
+  padding:12px 20px; border-radius:10px; font-family:'DM Sans',sans-serif;
+  font-size:13px; font-weight:600; cursor:pointer; border:none;
+  transition:all .22s ease; position:relative; overflow:hidden;
 }
-.btn-primary { background:linear-gradient(135deg,var(--gold),#a07830); color:#0a0a0a; box-shadow:0 4px 18px rgba(201,168,76,.3); }
-.btn-primary:active { transform:scale(.97); }
-.btn-secondary { background:rgba(255,255,255,.07); color:var(--text); border:1px solid rgba(255,255,255,.1); }
-.btn-secondary:active { transform:scale(.97); }
+.btn::after {
+  content:''; position:absolute; inset:0;
+  background:rgba(255,255,255,0); transition:background .2s;
+}
+.btn:active::after { background:rgba(255,255,255,0.08); }
+.btn-primary {
+  background:linear-gradient(135deg, var(--gold-light), #b88c2a);
+  color:#0a0a0a;
+  box-shadow:0 4px 20px rgba(201,168,76,0.35);
+}
+.btn-primary:hover { box-shadow:0 6px 28px rgba(201,168,76,0.5); transform:translateY(-1px); }
+.btn-primary:active { transform:scale(0.97); }
+.btn-secondary {
+  background:rgba(255,255,255,0.06);
+  color:var(--text);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(8px);
+}
+.btn-secondary:hover { background:rgba(255,255,255,0.1); border-color:rgba(201,168,76,0.3); }
+.btn-secondary:active { transform:scale(0.97); }
+.btn-icon { width:14px; height:14px; flex-shrink:0; }
 
-/* SECTION */
-.section { padding:22px 18px; }
-.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-.section-title { font-family:'Cinzel',serif; font-size:13px; font-weight:600; color:var(--gold); letter-spacing:2px; text-transform:uppercase; }
-.section-line { flex:1; height:1px; background:linear-gradient(to right,rgba(201,168,76,.25),transparent); margin-left:10px; }
-.see-all { font-size:11px; color:var(--text-dim); cursor:pointer; transition:color .2s; text-decoration:none; margin-left:10px; }
-.see-all:hover { color:var(--gold); }
+/* hero dots */
+.hero-dots {
+  position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+  display:flex; gap:5px; z-index:3;
+}
+.hero-dot {
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,0.25); transition:all .3s;
+  cursor:pointer;
+}
+.hero-dot.active { background:var(--gold); width:18px; border-radius:3px; }
 
-/* CHIPS */
-.chips { display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; margin-bottom:14px; }
+/* ───── SECTION ───── */
+.section { padding:20px 16px; }
+.section-header { display:flex; align-items:center; margin-bottom:14px; gap:10px; }
+.section-title {
+  font-family:'Cinzel',serif; font-size:12px; font-weight:600;
+  color:var(--gold); letter-spacing:2px; text-transform:uppercase; white-space:nowrap;
+}
+.section-line {
+  flex:1; height:1px;
+  background:linear-gradient(to right, rgba(201,168,76,0.2), transparent);
+}
+.see-all {
+  font-size:11px; color:var(--text-dim); cursor:pointer;
+  transition:color .2s; white-space:nowrap;
+  padding:4px 10px; border-radius:20px; border:1px solid rgba(201,168,76,0.15);
+  background:transparent;
+}
+.see-all:hover { color:var(--gold); border-color:var(--gold); }
+
+/* ───── CHIPS ───── */
+.chips-wrap { padding:0 16px 4px; }
+.chips {
+  display:flex; gap:7px; overflow-x:auto;
+  padding-bottom:4px; scrollbar-width:none;
+}
 .chips::-webkit-scrollbar { display:none; }
 .chip {
-  flex-shrink:0; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:500;
-  cursor:pointer; border:1px solid rgba(201,168,76,.22); background:transparent;
-  color:var(--text-dim); transition:all .2s;
+  flex-shrink:0; padding:7px 15px; border-radius:22px;
+  font-size:11px; font-weight:500; cursor:pointer;
+  border:1px solid rgba(201,168,76,0.18); background:transparent;
+  color:var(--text-dim); transition:all .2s ease;
 }
-.chip.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); font-weight:600; }
-.chip:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
+.chip.active {
+  background:linear-gradient(135deg, var(--gold), #a07830);
+  color:#0a0a0a; border-color:transparent; font-weight:700;
+  box-shadow:0 3px 12px rgba(201,168,76,0.3);
+}
+.chip:hover:not(.active) { border-color:var(--gold-dim); color:var(--text); }
 
-/* CARD SCROLL */
-.card-scroll { display:flex; gap:11px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
+/* ───── CARD SCROLL ───── */
+.card-scroll {
+  display:flex; gap:10px; overflow-x:auto;
+  padding-bottom:4px; scrollbar-width:none;
+}
 .card-scroll::-webkit-scrollbar { display:none; }
-.card { flex-shrink:0; width:108px; cursor:pointer; transition:transform .25s; }
-.card:hover { transform:translateY(-3px); }
-.card:active { transform:scale(.96); }
+.card { flex-shrink:0; width:108px; cursor:pointer; transition:transform .25s ease; }
+.card:hover { transform:translateY(-4px); }
+.card:active { transform:scale(0.95); opacity:0.85; }
 .card-thumb {
-  width:100%; aspect-ratio:3/4; border-radius:8px; overflow:hidden;
+  width:100%; aspect-ratio:2/3; border-radius:var(--radius-sm); overflow:hidden;
   position:relative; background:var(--bg3); margin-bottom:7px;
-  border:1px solid rgba(201,168,76,.12);
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:0 4px 16px rgba(0,0,0,0.5);
 }
-.card-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s; }
-.card:hover .card-thumb img { transform:scale(1.06); }
+.card-thumb img {
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform .4s ease;
+}
+.card:hover .card-thumb img { transform:scale(1.07); }
+.card-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+}
 .card-badge {
-  position:absolute; bottom:5px; left:5px;
-  background:rgba(10,10,10,.85); border:1px solid var(--gold-dim);
-  color:var(--gold-light); font-size:8px; font-weight:600;
-  padding:2px 6px; border-radius:4px; letter-spacing:.5px; text-transform:uppercase;
+  position:absolute; bottom:6px; left:6px;
+  background:rgba(8,8,8,0.88);
+  border:1px solid rgba(201,168,76,0.35);
+  color:var(--gold-light); font-size:8px; font-weight:700;
+  padding:2px 7px; border-radius:4px; letter-spacing:.6px; text-transform:uppercase;
 }
-.card-title { font-size:11px; font-weight:500; color:var(--text); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.card-sub { font-size:10px; color:var(--text-dim); margin-top:2px; }
+.card-play {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .25s;
+  background:rgba(0,0,0,0.4);
+}
+.card:hover .card-play { opacity:1; }
+.card-play svg { width:28px; height:28px; fill:var(--gold); drop-shadow(0 2px 8px rgba(0,0,0,.8)); }
+.card-title {
+  font-size:11px; font-weight:500; color:var(--text); line-height:1.35;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.card-sub { font-size:10px; color:var(--text-muted); margin-top:3px; }
 
-/* REKO LIST */
-.reko-list { display:flex; flex-direction:column; gap:10px; }
+/* ───── REKO LIST ───── */
+.reko-list { display:flex; flex-direction:column; gap:2px; }
 .reko-item {
   display:flex; align-items:center; gap:12px; cursor:pointer;
-  padding:8px; border-radius:10px; transition:background .2s;
+  padding:10px; border-radius:var(--radius); transition:background .2s;
 }
-.reko-item:hover { background:rgba(201,168,76,.05); }
-.reko-item:active { background:rgba(201,168,76,.1); }
-.reko-thumb { width:58px; height:78px; border-radius:7px; overflow:hidden; flex-shrink:0; background:var(--bg3); border:1px solid rgba(201,168,76,.12); }
+.reko-item:hover { background:rgba(201,168,76,0.05); }
+.reko-item:active { background:rgba(201,168,76,0.1); transform:scale(0.99); }
+.reko-rank {
+  font-family:'Cinzel',serif; font-size:18px; font-weight:700;
+  color:var(--gold-dim); width:22px; text-align:center; flex-shrink:0;
+}
+.reko-thumb {
+  width:54px; height:74px; border-radius:var(--radius-sm); overflow:hidden;
+  flex-shrink:0; background:var(--bg3);
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 2px 10px rgba(0,0,0,0.4);
+}
 .reko-thumb img { width:100%; height:100%; object-fit:cover; }
-.reko-info { flex:1; }
-.reko-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.reko-info { flex:1; min-width:0; }
+.reko-title {
+  font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;
+  line-height:1.3; display:-webkit-box; -webkit-line-clamp:2;
+  -webkit-box-orient:vertical; overflow:hidden;
+}
 .reko-meta { font-size:11px; color:var(--text-dim); }
-.chevron svg { width:14px; height:14px; stroke:var(--text-dim); fill:none; stroke-width:2; }
+.chevron svg { width:14px; height:14px; stroke:var(--text-muted); fill:none; stroke-width:2; flex-shrink:0; }
 
-/* SKELETON */
-.skeleton { background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
+/* ───── SKELETON ───── */
+.skeleton {
+  background:linear-gradient(90deg, var(--bg3) 25%, var(--bg4) 50%, var(--bg3) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:6px;
+}
 @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 
-/* PLAYER PAGE */
-.player-header { padding:64px 18px 12px; display:flex; align-items:center; gap:10px; }
-.back-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.07); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+/* ───── PLAYER PAGE ───── */
+.player-header {
+  padding:0 16px;
+  height:var(--nav-h);
+  display:flex; align-items:center; gap:10px;
+  position:fixed; top:0; left:0; right:0; z-index:250;
+  background:rgba(8,8,8,0.95);
+  border-bottom:1px solid rgba(201,168,76,0.08);
+  backdrop-filter:blur(20px);
+}
+.back-btn {
+  width:36px; height:36px; border-radius:50%;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all .2s;
+}
+.back-btn:hover { background:rgba(201,168,76,0.12); border-color:rgba(201,168,76,0.3); }
 .back-btn svg { width:16px; height:16px; stroke:var(--text); fill:none; stroke-width:2; }
-.player-header-title { font-size:14px; font-weight:600; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.player-wrap { width:100%; aspect-ratio:16/9; background:#000; position:relative; }
-.player-wrap video, .player-wrap iframe { width:100%; height:100%; display:block; }
+.player-header-title {
+  font-size:14px; font-weight:600; line-height:1.3;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.player-wrap {
+  width:100%; aspect-ratio:16/9; background:#000;
+  position:relative; overflow:hidden;
+  margin-top:var(--nav-h);
+}
+.player-wrap video,
+.player-wrap iframe { width:100%; height:100%; display:block; border:none; }
 .player-loading {
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   background:#000; flex-direction:column; gap:12px;
 }
-.spinner { width:36px; height:36px; border:3px solid rgba(201,168,76,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; }
+.spinner {
+  width:38px; height:38px;
+  border:3px solid rgba(201,168,76,0.15);
+  border-top-color:var(--gold);
+  border-radius:50%; animation:spin .75s linear infinite;
+}
 @keyframes spin { to{transform:rotate(360deg)} }
+.spinner-text { font-size:12px; color:var(--text-dim); }
 
-.player-body { padding:16px 18px; }
-.player-title { font-family:'Cinzel',serif; font-size:17px; font-weight:700; margin-bottom:8px; line-height:1.3; }
-.player-meta { font-size:11px; color:var(--text-dim); margin-bottom:14px; display:flex; gap:8px; flex-wrap:wrap; }
-
-.quality-row { display:flex; gap:7px; margin-bottom:14px; }
+.player-body { padding:16px 16px 4px; }
+.player-title {
+  font-family:'Cinzel',serif; font-size:16px; font-weight:700;
+  margin-bottom:8px; line-height:1.3;
+}
+.player-meta {
+  font-size:11px; color:var(--text-dim); margin-bottom:14px;
+  display:flex; gap:6px; flex-wrap:wrap; align-items:center;
+}
+.player-meta-badge {
+  background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.2);
+  color:var(--gold); border-radius:4px; padding:2px 7px; font-size:10px; font-weight:600;
+}
+.quality-row { display:flex; gap:7px; margin-bottom:14px; flex-wrap:wrap; }
 .q-pill {
-  padding:5px 11px; border-radius:6px; font-size:11px; font-weight:600;
-  cursor:pointer; border:1px solid rgba(201,168,76,.25);
+  padding:6px 12px; border-radius:var(--radius-sm); font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid rgba(201,168,76,0.22);
   background:transparent; color:var(--text-dim); transition:all .2s;
 }
 .q-pill.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); }
+.q-pill:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
 
-.divider { height:1px; background:rgba(255,255,255,.05); margin:14px 0; }
+.divider {
+  height:1px; background:rgba(255,255,255,0.05);
+  margin:14px 0;
+  position:relative;
+}
+.divider::after {
+  content:''; position:absolute; left:0; top:0; width:40px; height:1px;
+  background:var(--gold-dim);
+}
 
-/* SEARCH PAGE */
-.search-top { padding:68px 18px 14px; }
+/* ───── SEARCH PAGE ───── */
+.search-top { padding:16px 16px 14px; }
 .search-wrap { position:relative; }
 .search-big {
-  width:100%; background:var(--bg3); border:1px solid rgba(201,168,76,.2);
-  border-radius:12px; padding:13px 16px 13px 42px; color:var(--text);
-  font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .3s;
+  width:100%; background:var(--bg3);
+  border:1px solid rgba(201,168,76,0.15);
+  border-radius:var(--radius); padding:13px 16px 13px 44px;
+  color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px;
+  outline:none; transition:all .3s ease;
 }
-.search-big:focus { border-color:var(--gold); }
-.search-big::placeholder { color:var(--text-dim); }
-.search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); }
-.search-icon svg { width:16px; height:16px; stroke:var(--text-dim); fill:none; stroke-width:2; }
-.search-results { padding:0 18px; }
-.search-empty { text-align:center; padding:50px 0; color:var(--text-dim); }
-.search-empty svg { width:44px; height:44px; stroke:currentColor; fill:none; stroke-width:1; opacity:.3; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto; }
+.search-big:focus {
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(201,168,76,0.1);
+  background:rgba(201,168,76,0.04);
+}
+.search-big::placeholder { color:var(--text-muted); }
+.search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); pointer-events:none; }
+.search-icon svg { width:18px; height:18px; stroke:var(--text-dim); fill:none; stroke-width:2; }
+.search-clear {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  width:22px; height:22px; border-radius:50%; background:var(--bg5);
+  border:none; cursor:pointer; display:none; align-items:center; justify-content:center;
+}
+.search-clear svg { width:12px; height:12px; stroke:var(--text-dim); fill:none; stroke-width:2.5; }
+.search-results { padding:0 16px; }
+.search-empty {
+  text-align:center; padding:56px 0 40px; color:var(--text-dim);
+}
+.search-empty svg {
+  width:46px; height:46px; stroke:currentColor; fill:none; stroke-width:1.2;
+  opacity:.2; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto;
+}
+.search-empty p { font-size:13px; }
+.search-empty b { color:var(--text); }
+
 .search-item {
   display:flex; gap:12px; align-items:center;
-  padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer;
-  transition:opacity .2s;
+  padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04);
+  cursor:pointer; transition:opacity .18s;
 }
-.search-item:active { opacity:.7; }
-.search-item-thumb { width:48px; height:66px; border-radius:6px; overflow:hidden; flex-shrink:0; background:var(--bg3); }
+.search-item:active { opacity:0.7; }
+.search-item-thumb {
+  width:48px; height:64px; border-radius:var(--radius-sm); overflow:hidden;
+  flex-shrink:0; background:var(--bg3);
+  border:1px solid rgba(255,255,255,0.06);
+}
 .search-item-thumb img { width:100%; height:100%; object-fit:cover; }
 .search-item-info .title { font-size:13px; font-weight:600; margin-bottom:4px; line-height:1.3; }
 .search-item-info .meta { font-size:11px; color:var(--text-dim); }
-
-/* BOTTOM NAV */
-.bottom-nav {
-  position:fixed; bottom:0; left:0; right:0; z-index:200;
-  display:flex; background:rgba(10,10,10,.96);
-  border-top:1px solid rgba(201,168,76,.08);
-  backdrop-filter:blur(14px);
-  padding-bottom:env(safe-area-inset-bottom);
+.search-count {
+  font-size:11px; color:var(--text-dim); padding:10px 0 14px;
 }
-.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:9px 0; cursor:pointer; gap:3px; transition:opacity .2s; }
-.nav-item:active { opacity:.7; }
-.nav-item svg { width:20px; height:20px; stroke:var(--text-dim); fill:none; stroke-width:1.7; transition:stroke .2s; }
-.nav-item span { font-size:9px; color:var(--text-dim); transition:color .2s; letter-spacing:.3px; }
-.nav-item.active svg { stroke:var(--gold); }
-.nav-item.active span { color:var(--gold); font-weight:600; }
+.search-count b { color:var(--gold); }
 
-/* TOAST */
+/* genre chips in search */
+.genre-grid {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:8px;
+  margin-top:4px;
+}
+.genre-card {
+  padding:14px 12px; border-radius:var(--radius); cursor:pointer;
+  border:1px solid rgba(255,255,255,0.07);
+  background:var(--bg3); transition:all .22s;
+  display:flex; align-items:center; gap:9px;
+}
+.genre-card:hover { border-color:rgba(201,168,76,0.3); background:rgba(201,168,76,0.06); }
+.genre-card:active { transform:scale(0.97); }
+.genre-icon { font-size:20px; }
+.genre-name { font-size:12px; font-weight:600; color:var(--text); }
+
+/* ───── BOOKMARK PAGE ───── */
+.bookmark-header {
+  padding:16px 16px 8px;
+  font-family:'Cinzel',serif; font-size:14px; font-weight:600;
+  color:var(--gold); letter-spacing:1px;
+}
+.bookmark-empty {
+  text-align:center; padding:60px 20px;
+  color:var(--text-dim);
+}
+.bookmark-empty svg {
+  width:50px; height:50px; stroke:currentColor; fill:none;
+  stroke-width:1; opacity:.2; margin-bottom:14px; display:block;
+  margin-left:auto; margin-right:auto;
+}
+.bookmark-empty p { font-size:13px; line-height:1.6; }
+.bookmark-list { padding:0 16px; display:flex; flex-direction:column; gap:2px; }
+.bookmark-item {
+  display:flex; align-items:center; gap:12px;
+  padding:10px; border-radius:var(--radius); cursor:pointer;
+  transition:background .2s; position:relative;
+}
+.bookmark-item:hover { background:rgba(201,168,76,0.05); }
+.bookmark-item:active { background:rgba(201,168,76,0.1); }
+.bookmark-thumb {
+  width:54px; height:74px; border-radius:var(--radius-sm); overflow:hidden;
+  flex-shrink:0; background:var(--bg3); border:1px solid rgba(255,255,255,0.06);
+}
+.bookmark-thumb img { width:100%; height:100%; object-fit:cover; }
+.bookmark-info { flex:1; min-width:0; }
+.bookmark-title {
+  font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;
+  line-height:1.3; display:-webkit-box; -webkit-line-clamp:2;
+  -webkit-box-orient:vertical; overflow:hidden;
+}
+.bookmark-meta { font-size:11px; color:var(--text-dim); }
+.bookmark-del {
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(224,80,80,0.1); border:1px solid rgba(224,80,80,0.2);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all .2s;
+}
+.bookmark-del:hover { background:rgba(224,80,80,0.25); border-color:var(--red); }
+.bookmark-del svg { width:13px; height:13px; stroke:var(--red); fill:none; stroke-width:2; }
+
+/* ───── PROFILE PAGE ───── */
+.profile-wrap { padding:16px; }
+.profile-card {
+  background:var(--bg3); border-radius:var(--radius);
+  border:1px solid rgba(201,168,76,0.1);
+  padding:20px; margin-bottom:14px; text-align:center;
+}
+.profile-avatar {
+  width:70px; height:70px; border-radius:50%;
+  background:linear-gradient(135deg, var(--gold-dim), var(--gold));
+  margin:0 auto 12px; display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel',serif; font-size:26px; font-weight:700; color:#0a0a0a;
+  box-shadow:0 4px 20px rgba(201,168,76,0.3);
+}
+.profile-name {
+  font-family:'Cinzel',serif; font-size:16px; font-weight:700;
+  margin-bottom:4px; color:var(--text);
+}
+.profile-sub { font-size:12px; color:var(--text-dim); }
+.profile-stats {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+  background:rgba(255,255,255,0.05); border-radius:var(--radius);
+  overflow:hidden; margin-top:16px;
+}
+.stat-item { background:var(--bg3); padding:12px; text-align:center; }
+.stat-val { font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:var(--gold); }
+.stat-lab { font-size:10px; color:var(--text-dim); margin-top:2px; }
+
+.menu-list { display:flex; flex-direction:column; gap:2px; }
+.menu-item {
+  display:flex; align-items:center; gap:12px;
+  padding:14px; border-radius:var(--radius); cursor:pointer;
+  background:var(--bg3); border:1px solid rgba(255,255,255,0.04);
+  transition:all .2s;
+}
+.menu-item:hover { background:var(--bg4); border-color:rgba(201,168,76,0.15); }
+.menu-item:active { transform:scale(0.99); }
+.menu-icon {
+  width:36px; height:36px; border-radius:var(--radius-sm);
+  background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.15);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.menu-icon svg { width:16px; height:16px; stroke:var(--gold); fill:none; stroke-width:2; }
+.menu-text { flex:1; }
+.menu-label { font-size:13px; font-weight:600; color:var(--text); }
+.menu-desc { font-size:11px; color:var(--text-dim); margin-top:2px; }
+.menu-chevron svg { width:14px; height:14px; stroke:var(--text-muted); fill:none; stroke-width:2; }
+
+/* credit */
+.credit-section {
+  padding:20px 16px; text-align:center;
+  border-top:1px solid rgba(255,255,255,0.05); margin-top:8px;
+}
+.credit-logo {
+  font-family:'Cinzel',serif; font-size:16px; font-weight:700;
+  background:linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text; margin-bottom:6px;
+}
+.credit-by {
+  font-size:11px; color:var(--text-muted); letter-spacing:.5px;
+}
+.credit-by span { color:var(--gold-dim); font-weight:600; }
+.credit-tag {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.15);
+  border-radius:20px; padding:4px 12px; font-size:10px;
+  color:var(--text-dim); margin-top:10px; letter-spacing:.3px;
+}
+.credit-heart { color:var(--red); }
+
+/* ───── BOTTOM NAV ───── */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:300;
+  display:flex;
+  background:rgba(8,8,8,0.97);
+  border-top:1px solid rgba(201,168,76,0.1);
+  backdrop-filter:blur(20px);
+  padding-bottom:env(safe-area-inset-bottom);
+  height:var(--bot-h);
+}
+.nav-item {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; cursor:pointer; gap:4px;
+  transition:all .2s; position:relative; padding:0 4px;
+}
+.nav-item::before {
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:0; height:2px; background:var(--gold);
+  border-radius:0 0 3px 3px; transition:width .25s ease;
+}
+.nav-item.active::before { width:28px; }
+.nav-item:active { opacity:0.7; }
+.nav-item svg { width:20px; height:20px; stroke:var(--text-muted); fill:none; stroke-width:1.7; transition:all .25s; }
+.nav-item span { font-size:9px; color:var(--text-muted); transition:color .25s; letter-spacing:.4px; font-weight:500; }
+.nav-item.active svg { stroke:var(--gold); }
+.nav-item.active span { color:var(--gold); font-weight:700; }
+
+/* ───── TOAST ───── */
 .toast {
-  position:fixed; bottom:85px; left:50%; transform:translateX(-50%) translateY(12px);
-  background:var(--bg4); border:1px solid rgba(201,168,76,.25);
-  color:var(--text); padding:9px 18px; border-radius:20px;
-  font-size:12px; opacity:0; pointer-events:none; transition:all .28s; z-index:300; white-space:nowrap;
+  position:fixed; bottom:calc(var(--bot-h) + 12px); left:50%;
+  transform:translateX(-50%) translateY(10px);
+  background:var(--bg4);
+  border:1px solid rgba(201,168,76,0.22);
+  color:var(--text); padding:9px 20px; border-radius:22px;
+  font-size:12px; opacity:0; pointer-events:none;
+  transition:all .28s ease; z-index:400; white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
 }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* ERROR STATE */
-.error-state { text-align:center; padding:40px 20px; color:var(--text-dim); }
-.error-state p { font-size:13px; margin-top:8px; }
-.retry-btn { margin-top:14px; padding:9px 20px; border-radius:20px; border:1px solid var(--gold); background:transparent; color:var(--gold); font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+/* ───── ERROR ───── */
+.error-card { padding:30px 20px; color:var(--text-dim); font-size:13px; text-align:center; }
+.retry-btn {
+  margin-top:12px; padding:9px 22px; border-radius:22px;
+  border:1px solid var(--gold); background:transparent;
+  color:var(--gold); font-size:12px; cursor:pointer;
+  font-family:'DM Sans',sans-serif; transition:all .2s;
+}
+.retry-btn:hover { background:rgba(201,168,76,0.1); }
+
+/* ───── MODAL CONFIRM ───── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.7);
+  z-index:500; display:flex; align-items:flex-end;
+  opacity:0; pointer-events:none; transition:opacity .25s;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.show { opacity:1; pointer-events:all; }
+.modal {
+  width:100%; background:var(--bg3);
+  border-radius:20px 20px 0 0;
+  border:1px solid rgba(201,168,76,0.12);
+  border-bottom:none;
+  padding:20px 20px 32px;
+  transform:translateY(100%); transition:transform .3s ease;
+}
+.modal-overlay.show .modal { transform:translateY(0); }
+.modal-title { font-family:'Cinzel',serif; font-size:15px; font-weight:700; margin-bottom:8px; }
+.modal-body { font-size:13px; color:var(--text-dim); margin-bottom:20px; line-height:1.6; }
+.modal-actions { display:flex; gap:10px; }
+.modal-actions .btn { flex:1; }
 </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <div class="logo" onclick="goPage('home')">Indo<span>Stream</span></div>
+  <div class="logo" onclick="goPage('home')">Indo<em>Stream</em></div>
   <div class="nav-right">
     <div class="nav-search-wrap">
-      <div class="nav-search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <div class="nav-search-icon">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
       <input class="nav-search" type="text" placeholder="Cari..." id="navSearch" oninput="navSearchHandler(this.value)">
     </div>
   </div>
@@ -267,33 +662,43 @@ nav {
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- ===== HOME ===== -->
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<!-- ═══════════ HOME ═══════════ -->
 <div class="page active" id="page-home">
 
-  <!-- HERO -->
   <div class="hero" id="heroSection">
+    <div class="hero-accent"></div>
     <div class="hero-bg" id="heroBg"></div>
-    <div class="hero-overlay"></div>
+    <div class="hero-gradient"></div>
     <div class="hero-content" id="heroContent">
-      <div class="hero-poster skeleton" style="width:105px;aspect-ratio:2/3;border-radius:10px;"></div>
+      <div class="hero-poster skeleton" style="width:100px;aspect-ratio:2/3;border-radius:10px;"></div>
       <div style="flex:1">
-        <div class="skeleton" style="height:14px;width:60px;margin-bottom:10px;border-radius:20px;"></div>
-        <div class="skeleton" style="height:26px;width:90%;margin-bottom:8px;"></div>
-        <div class="skeleton" style="height:12px;width:70%;margin-bottom:20px;"></div>
-        <div class="skeleton" style="height:44px;border-radius:10px;margin-bottom:9px;"></div>
+        <div class="skeleton" style="height:20px;width:70px;border-radius:20px;margin-bottom:10px;"></div>
+        <div class="skeleton" style="height:24px;width:92%;margin-bottom:8px;"></div>
+        <div class="skeleton" style="height:11px;width:75%;margin-bottom:18px;"></div>
+        <div class="skeleton" style="height:44px;border-radius:10px;margin-bottom:8px;"></div>
         <div class="skeleton" style="height:44px;border-radius:10px;"></div>
       </div>
     </div>
+    <div class="hero-dots" id="heroDots"></div>
   </div>
 
   <!-- CHIPS -->
-  <div class="section" style="padding-bottom:0">
+  <div class="chips-wrap" style="padding-top:16px;">
     <div class="chips">
-      <div class="chip active" onclick="filterCat(this,'all')">Semua</div>
-      <div class="chip" onclick="filterCat(this,'5')">Anime Series</div>
-      <div class="chip" onclick="filterCat(this,'4')">Anime Movie</div>
-      <div class="chip" onclick="filterCat(this,'3')">TV Series</div>
-      <div class="chip" onclick="filterCat(this,'1')">Film Movie</div>
+      <div class="chip active" onclick="filterCat(this,'all')">✦ Semua</div>
+      <div class="chip" onclick="filterCat(this,'5')">🎌 Anime Series</div>
+      <div class="chip" onclick="filterCat(this,'4')">🎬 Anime Movie</div>
+      <div class="chip" onclick="filterCat(this,'3')">📺 TV Series</div>
+      <div class="chip" onclick="filterCat(this,'1')">🎥 Film Movie</div>
     </div>
   </div>
 
@@ -302,38 +707,38 @@ nav {
     <div class="section-header">
       <span class="section-title">Terbaru</span>
       <div class="section-line"></div>
-      <a class="see-all" onclick="loadMore()">Lihat Semua</a>
+      <button class="see-all" onclick="loadMore()">Lihat Semua</button>
     </div>
     <div class="card-scroll" id="latestCards">
-      ${[...Array(5)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div><div class="skeleton" style="height:9px;margin-top:4px;width:70%"></div></div>`).join('')}
+      ${[...Array(5)].map(()=>`<div class="card"><div class="card-thumb skeleton" style="aspect-ratio:2/3"></div><div class="skeleton" style="height:11px;margin-top:7px"></div><div class="skeleton" style="height:9px;margin-top:4px;width:65%"></div></div>`).join('')}
     </div>
   </div>
 
   <!-- TRENDING -->
-  <div class="section">
+  <div class="section" style="padding-top:0">
     <div class="section-header">
-      <span class="section-title">Trending</span>
+      <span class="section-title">🔥 Trending</span>
       <div class="section-line"></div>
     </div>
     <div class="card-scroll" id="trendingCards">
-      ${[...Array(4)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div></div>`).join('')}
+      ${[...Array(4)].map(()=>`<div class="card"><div class="card-thumb skeleton" style="aspect-ratio:2/3"></div><div class="skeleton" style="height:11px;margin-top:7px"></div></div>`).join('')}
     </div>
   </div>
 
   <!-- REKOMENDASI -->
-  <div class="section">
+  <div class="section" style="padding-top:0">
     <div class="section-header">
       <span class="section-title">Rekomendasi</span>
       <div class="section-line"></div>
     </div>
     <div class="reko-list" id="rekoList">
-      ${[...Array(4)].map(()=>`<div class="reko-item"><div class="reko-thumb skeleton"></div><div style="flex:1"><div class="skeleton" style="height:13px;margin-bottom:6px"></div><div class="skeleton" style="height:10px;width:60%"></div></div></div>`).join('')}
+      ${[...Array(4)].map((_,i)=>`<div class="reko-item"><div class="reko-rank">${i+1}</div><div class="reko-thumb skeleton"></div><div style="flex:1"><div class="skeleton" style="height:13px;margin-bottom:6px"></div><div class="skeleton" style="height:10px;width:55%"></div></div></div>`).join('')}
     </div>
   </div>
 
 </div>
 
-<!-- ===== PLAYER ===== -->
+<!-- ═══════════ PLAYER ═══════════ -->
 <div class="page" id="page-player">
   <div class="player-header">
     <button class="back-btn" onclick="goBack()">
@@ -344,37 +749,136 @@ nav {
   <div class="player-wrap">
     <div class="player-loading" id="playerLoading">
       <div class="spinner"></div>
-      <span style="font-size:12px;color:var(--text-dim)">Memuat video...</span>
+      <span class="spinner-text">Memuat video...</span>
     </div>
-    <iframe id="playerIframe" allowfullscreen style="display:none;width:100%;height:100%;border:none;" allow="autoplay; fullscreen"></iframe>
+    <iframe id="playerIframe" allowfullscreen style="display:none;width:100%;height:100%;border:none;" allow="autoplay; fullscreen; picture-in-picture"></iframe>
   </div>
   <div class="player-body">
     <h2 class="player-title" id="playerTitle"></h2>
     <div class="player-meta" id="playerMeta"></div>
-    <div class="quality-row" id="qualityRow"></div>
+    <div style="display:flex;gap:8px;margin-bottom:14px" id="playerActions">
+      <button class="btn btn-secondary" style="flex:1;padding:10px 8px;font-size:12px" onclick="bookmarkCurrent()">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Bookmark
+      </button>
+      <button class="btn btn-secondary" style="flex:1;padding:10px 8px;font-size:12px" onclick="shareVideo()">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Bagikan
+      </button>
+    </div>
     <div class="divider"></div>
-    <div class="section-title" style="margin-bottom:12px">Lainnya</div>
+    <div class="section-title" style="margin-bottom:12px;">Lainnya</div>
     <div class="reko-list" id="playerNext"></div>
   </div>
 </div>
 
-<!-- ===== SEARCH ===== -->
+<!-- ═══════════ SEARCH ═══════════ -->
 <div class="page" id="page-search">
   <div class="search-top">
     <div class="search-wrap">
       <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-      <input class="search-big" type="text" placeholder="Cari anime, kartun, film..." id="searchInput" oninput="doSearch(this.value)">
+      <input class="search-big" type="text" placeholder="Cari anime, film, kartun..." id="searchInput" oninput="doSearch(this.value)" autocomplete="off">
+      <button class="search-clear" id="searchClearBtn" onclick="clearSearch()">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
   </div>
   <div class="search-results" id="searchResults">
-    <div class="search-empty">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <p>Ketik untuk mulai pencarian</p>
+    <div style="padding:0 0 12px">
+      <div class="section-title" style="margin-bottom:12px">Jelajahi Genre</div>
+      <div class="genre-grid">
+        <div class="genre-card" onclick="searchGenre('Anime')"><span class="genre-icon">🎌</span><span class="genre-name">Anime</span></div>
+        <div class="genre-card" onclick="searchGenre('Movie')"><span class="genre-icon">🎬</span><span class="genre-name">Movie</span></div>
+        <div class="genre-card" onclick="searchGenre('Action')"><span class="genre-icon">⚡</span><span class="genre-name">Action</span></div>
+        <div class="genre-card" onclick="searchGenre('Fantasy')"><span class="genre-icon">🔮</span><span class="genre-name">Fantasy</span></div>
+        <div class="genre-card" onclick="searchGenre('Comedy')"><span class="genre-icon">😂</span><span class="genre-name">Komedi</span></div>
+        <div class="genre-card" onclick="searchGenre('Romance')"><span class="genre-icon">💕</span><span class="genre-name">Romance</span></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ===== BOTTOM NAV ===== -->
+<!-- ═══════════ BOOKMARK ═══════════ -->
+<div class="page" id="page-bookmark">
+  <div class="bookmark-header">📌 Tersimpan</div>
+  <div id="bookmarkContent"></div>
+</div>
+
+<!-- ═══════════ PROFILE ═══════════ -->
+<div class="page" id="page-profile">
+  <div class="profile-wrap">
+
+    <div class="profile-card">
+      <div class="profile-avatar">A</div>
+      <div class="profile-name">Penonton IndoStream</div>
+      <div class="profile-sub">Member sejak 2025 · Dubbing Indonesia Fan</div>
+      <div class="profile-stats">
+        <div class="stat-item">
+          <div class="stat-val" id="statWatch">0</div>
+          <div class="stat-lab">Ditonton</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="statBookmark">0</div>
+          <div class="stat-lab">Tersimpan</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">ID</div>
+          <div class="stat-lab">Dubbing</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-list">
+      <div class="menu-item" onclick="goPage('bookmark')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="menu-text">
+          <div class="menu-label">Tontonan Tersimpan</div>
+          <div class="menu-desc">Lihat daftar bookmark kamu</div>
+        </div>
+        <div class="menu-chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
+      </div>
+      <div class="menu-item" onclick="showToast('🕐 History coming soon!')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
+        <div class="menu-text">
+          <div class="menu-label">Riwayat Tontonan</div>
+          <div class="menu-desc">Video yang pernah kamu tonton</div>
+        </div>
+        <div class="menu-chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
+      </div>
+      <div class="menu-item" onclick="showToast('🔔 Notifikasi coming soon!')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <div class="menu-text">
+          <div class="menu-label">Notifikasi</div>
+          <div class="menu-desc">Update konten terbaru</div>
+        </div>
+        <div class="menu-chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
+      </div>
+      <div class="menu-item" onclick="confirmClearBookmarks()">
+        <div class="menu-icon" style="background:rgba(224,80,80,0.1);border-color:rgba(224,80,80,0.2)">
+          <svg viewBox="0 0 24 24" style="stroke:var(--red)"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg>
+        </div>
+        <div class="menu-text">
+          <div class="menu-label" style="color:var(--red)">Hapus Semua Bookmark</div>
+          <div class="menu-desc">Bersihkan daftar tersimpan</div>
+        </div>
+        <div class="menu-chevron"><svg viewBox="0 0 24 24"><polyline points="9,18 15,12 9,6"/></svg></div>
+      </div>
+    </div>
+
+    <!-- CREDIT -->
+    <div class="credit-section">
+      <div class="credit-logo">IndoStream</div>
+      <div class="credit-by">Made with <span class="credit-heart">♥</span> by <span>Alan</span></div>
+      <div class="credit-tag">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        v2.0 · Dubbing Indonesia
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <div class="nav-item active" id="nav-home" onclick="goPage('home')">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
@@ -384,11 +888,11 @@ nav {
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <span>Cari</span>
   </div>
-  <div class="nav-item" id="nav-bookmark" onclick="showToast('Coming soon!')">
+  <div class="nav-item" id="nav-bookmark" onclick="goPage('bookmark')">
     <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
     <span>Simpan</span>
   </div>
-  <div class="nav-item" id="nav-profile" onclick="showToast('Coming soon!')">
+  <div class="nav-item" id="nav-profile" onclick="goPage('profile')">
     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span>Profil</span>
   </div>
@@ -402,41 +906,62 @@ const API = '';
 let currentPage = 'home';
 let pageStack = [];
 let currentCat = 'all';
-let currentSources = [];
-let currentQuality = 0;
 let heroVideos = [];
 let heroIndex = 0;
+let heroTimer = null;
 let searchTimeout = null;
 let latestVideos = [];
+let currentVideoData = null;
+
+// Bookmarks & stats stored in localStorage
+let bookmarks = JSON.parse(localStorage.getItem('is_bookmarks') || '[]');
+let watchCount = parseInt(localStorage.getItem('is_watch_count') || '0');
 
 // ===== UTILS =====
 function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
-
-function errorCard(msg) {
-  return `<div style="padding:20px;color:var(--text-dim);font-size:13px;text-align:center">${msg}</div>`;
-}
-
-// ✅ FIX: proxy semua gambar lewat /api/image biar bypass hotlink protection
 function proxyImg(url) {
   if (!url) return '';
   return `/api/image?url=${encodeURIComponent(url)}`;
 }
-
-function showToast(msg) {
+function showToast(msg, duration = 2400) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2300);
+  setTimeout(() => t.classList.remove('show'), duration);
 }
+function saveBookmarks() {
+  localStorage.setItem('is_bookmarks', JSON.stringify(bookmarks));
+}
+function saveWatchCount() {
+  localStorage.setItem('is_watch_count', String(watchCount));
+}
+function updateProfileStats() {
+  const bkEl = document.getElementById('statBookmark');
+  const wkEl = document.getElementById('statWatch');
+  if (bkEl) bkEl.textContent = bookmarks.length;
+  if (wkEl) wkEl.textContent = watchCount;
+}
+
+// ===== MODAL =====
+function showModal(title, body, actions) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').textContent = body;
+  document.getElementById('modalActions').innerHTML = actions;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 
 // ===== INIT =====
 window.addEventListener('DOMContentLoaded', async () => {
-  await Promise.all([
-    fetchLatest('all'),
-    fetchTrending(),
-  ]);
+  updateProfileStats();
+  await Promise.all([fetchLatest('all'), fetchTrending()]);
 });
 
 // ===== FETCH LATEST =====
@@ -444,22 +969,21 @@ async function fetchLatest(cat = 'all') {
   try {
     const res = await fetch(`${API}/api/latest?category=${cat}&page=1`);
     const data = await res.json();
-
     if (!data.videos || data.videos.length === 0) {
-      document.getElementById('latestCards').innerHTML = errorCard('Gagal memuat konten');
+      document.getElementById('latestCards').innerHTML = `<div class="error-card">Gagal memuat konten.<br><button class="retry-btn" onclick="fetchLatest('${cat}')">Coba lagi</button></div>`;
       return;
     }
-
     latestVideos = data.videos;
     renderCards('latestCards', data.videos);
-
     if (cat === 'all' && data.videos.length > 0) {
       heroVideos = data.videos.slice(0, 5);
+      heroIndex = 0;
       renderHero(heroVideos[0]);
+      renderHeroDots();
       startHeroRotation();
     }
-  } catch (e) {
-    document.getElementById('latestCards').innerHTML = errorCard('Koneksi gagal. Coba lagi.');
+  } catch(e) {
+    document.getElementById('latestCards').innerHTML = `<div class="error-card">Koneksi gagal.<br><button class="retry-btn" onclick="fetchLatest('all')">Coba lagi</button></div>`;
   }
 }
 
@@ -467,25 +991,26 @@ async function fetchTrending() {
   try {
     const res = await fetch(`${API}/api/latest?category=all&page=2`);
     const data = await res.json();
-    if (data.videos) renderCards('trendingCards', data.videos.slice(0, 8));
-    renderReko(data.videos ? data.videos.slice(0, 6) : []);
-  } catch (e) {
-    document.getElementById('trendingCards').innerHTML = errorCard('Gagal memuat');
+    if (data.videos) {
+      renderCards('trendingCards', data.videos.slice(0, 8));
+      renderReko(data.videos.slice(0, 6));
+    }
+  } catch(e) {
+    document.getElementById('trendingCards').innerHTML = `<div class="error-card">Gagal memuat</div>`;
   }
 }
 
 // ===== HERO =====
 function renderHero(v) {
+  if (!v) return;
   const bg = document.getElementById('heroBg');
-  // ✅ FIX: pakai proxyImg untuk background hero juga
   bg.style.backgroundImage = `url('${proxyImg(v.thumb)}')`;
-
   document.getElementById('heroContent').innerHTML = `
     <div class="hero-poster">
-      <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\'/>'">
+      <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'150\\'><rect fill=\\'%23181818\\'/></svg>'">
     </div>
     <div class="hero-info">
-      <div class="badge ongoing">${esc(v.catName)}</div>
+      <div class="badge"><span class="badge-dot"></span>${esc(v.catName)}</div>
       <h1 class="hero-title">${esc(v.title)}</h1>
       <div class="hero-meta">
         <span>Dubbing Indonesia</span>
@@ -496,11 +1021,11 @@ function renderHero(v) {
       </div>
       <div class="btn-group">
         <button class="btn btn-primary" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
           Tonton Sekarang
         </button>
-        <button class="btn btn-secondary" onclick="showToast('✓ Ditambahkan ke Bookmark')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        <button class="btn btn-secondary" onclick="quickBookmark('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}','${esc(v.catName)}','${esc(v.date)}')">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
           Bookmark
         </button>
       </div>
@@ -508,23 +1033,46 @@ function renderHero(v) {
   `;
 }
 
+function renderHeroDots() {
+  const el = document.getElementById('heroDots');
+  el.innerHTML = heroVideos.map((_,i) =>
+    `<div class="hero-dot ${i===0?'active':''}" onclick="jumpHero(${i})" data-idx="${i}"></div>`
+  ).join('');
+}
+
+function updateHeroDots(idx) {
+  document.querySelectorAll('.hero-dot').forEach((d,i) => {
+    d.classList.toggle('active', i === idx);
+  });
+}
+
+function jumpHero(idx) {
+  heroIndex = idx;
+  renderHero(heroVideos[idx]);
+  updateHeroDots(idx);
+}
+
 function startHeroRotation() {
+  if (heroTimer) clearInterval(heroTimer);
   if (heroVideos.length < 2) return;
-  setInterval(() => {
+  heroTimer = setInterval(() => {
     heroIndex = (heroIndex + 1) % heroVideos.length;
     renderHero(heroVideos[heroIndex]);
+    updateHeroDots(heroIndex);
   }, 6000);
 }
 
 // ===== RENDER CARDS =====
 function renderCards(containerId, videos) {
   const el = document.getElementById(containerId);
-  if (!videos || videos.length === 0) { el.innerHTML = errorCard('Tidak ada konten'); return; }
+  if (!videos || videos.length === 0) { el.innerHTML = `<div class="error-card">Tidak ada konten</div>`; return; }
   el.innerHTML = videos.map(v => `
     <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
       <div class="card-thumb">
         <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
+        <div class="card-overlay"></div>
         <div class="card-badge">${esc(v.catName)}</div>
+        <div class="card-play"><svg viewBox="0 0 24 24" fill="var(--gold)"><polygon points="5,3 19,12 5,21"/></svg></div>
       </div>
       <div class="card-title">${esc(v.title)}</div>
       <div class="card-sub">${v.views} views · ${v.date}</div>
@@ -535,8 +1083,9 @@ function renderCards(containerId, videos) {
 function renderReko(videos) {
   const el = document.getElementById('rekoList');
   if (!videos || videos.length === 0) { el.innerHTML = ''; return; }
-  el.innerHTML = videos.map(v => `
+  el.innerHTML = videos.map((v, i) => `
     <div class="reko-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+      <div class="reko-rank">${i+1}</div>
       <div class="reko-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
       <div class="reko-info">
         <div class="reko-title">${esc(v.title)}</div>
@@ -549,21 +1098,31 @@ function renderReko(videos) {
 
 // ===== PLAYER =====
 async function openPlayer(videoId, title, thumb) {
+  // track watch
+  watchCount++;
+  saveWatchCount();
+  updateProfileStats();
+
+  currentVideoData = { id: videoId, title, thumb };
+
   document.getElementById('playerHeaderTitle').textContent = title;
   document.getElementById('playerTitle').textContent = title;
-  document.getElementById('playerMeta').textContent = 'Dubbing Indonesia · IndoStream';
+  document.getElementById('playerMeta').innerHTML = `
+    <span class="player-meta-badge">Dubbing ID</span>
+    <span>IndoStream</span>
+    <span class="dot">·</span>
+    <span>${new Date().getFullYear()}</span>
+  `;
   document.getElementById('playerLoading').style.display = 'flex';
   document.getElementById('playerIframe').style.display = 'none';
-  document.getElementById('qualityRow').innerHTML = '';
   document.getElementById('playerNext').innerHTML = '';
 
   pageStack.push(currentPage);
   goPage('player');
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const shortCode = videoId.replace(/\.html$/, '').split('_').pop();
   const embedUrl = `https://www.dubbindo.site/embed/${shortCode}`;
-
   const iframe = document.getElementById('playerIframe');
   iframe.src = embedUrl;
   iframe.onload = () => {
@@ -573,13 +1132,12 @@ async function openPlayer(videoId, title, thumb) {
   iframe.onerror = () => {
     document.getElementById('playerLoading').innerHTML = `<p style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px">Gagal memuat video.<br>Coba lagi nanti.</p>`;
   };
-
   setTimeout(() => {
     if (document.getElementById('playerLoading').style.display !== 'none') {
       document.getElementById('playerLoading').style.display = 'none';
       iframe.style.display = 'block';
     }
-  }, 3000);
+  }, 3500);
 
   loadNextVideos(videoId);
 }
@@ -602,41 +1160,145 @@ async function loadNextVideos(currentId) {
   } catch(e) {}
 }
 
+// ===== BOOKMARK =====
+function quickBookmark(id, title, thumb, catName, date) {
+  const exists = bookmarks.find(b => b.id === id);
+  if (exists) { showToast('⚠️ Sudah ada di bookmark'); return; }
+  bookmarks.unshift({ id, title, thumb, catName, date });
+  saveBookmarks();
+  updateProfileStats();
+  showToast('✓ Ditambahkan ke Bookmark');
+}
+
+function bookmarkCurrent() {
+  if (!currentVideoData) return;
+  const { id, title, thumb } = currentVideoData;
+  const exists = bookmarks.find(b => b.id === id);
+  if (exists) { showToast('⚠️ Sudah ada di bookmark'); return; }
+  bookmarks.unshift({ id, title, thumb, catName: 'Video', date: new Date().getFullYear().toString() });
+  saveBookmarks();
+  updateProfileStats();
+  showToast('✓ Ditambahkan ke Bookmark');
+}
+
+function shareVideo() {
+  if (!currentVideoData) return;
+  if (navigator.share) {
+    navigator.share({ title: currentVideoData.title, text: `Tonton ${currentVideoData.title} di IndoStream!`, url: window.location.href }).catch(()=>{});
+  } else {
+    navigator.clipboard && navigator.clipboard.writeText(window.location.href).then(() => showToast('🔗 Link disalin!')).catch(() => showToast('🔗 Salin URL dari browser'));
+  }
+}
+
+function renderBookmarks() {
+  const el = document.getElementById('bookmarkContent');
+  if (!bookmarks.length) {
+    el.innerHTML = `
+      <div class="bookmark-empty">
+        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        <p>Belum ada yang disimpan.<br>Tekan Bookmark saat nonton!</p>
+      </div>`;
+    return;
+  }
+  el.innerHTML = `<div class="bookmark-list">` + bookmarks.map((v, i) => `
+    <div class="bookmark-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+      <div class="bookmark-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
+      <div class="bookmark-info">
+        <div class="bookmark-title">${esc(v.title)}</div>
+        <div class="bookmark-meta">${esc(v.catName)} · ${v.date}</div>
+      </div>
+      <button class="bookmark-del" onclick="event.stopPropagation();removeBookmark(${i})">
+        <svg viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg>
+      </button>
+    </div>
+  `).join('') + `</div>`;
+}
+
+function removeBookmark(idx) {
+  bookmarks.splice(idx, 1);
+  saveBookmarks();
+  updateProfileStats();
+  renderBookmarks();
+  showToast('🗑️ Dihapus dari Bookmark');
+}
+
+function confirmClearBookmarks() {
+  if (!bookmarks.length) { showToast('⚠️ Bookmark sudah kosong'); return; }
+  showModal(
+    'Hapus Semua Bookmark',
+    'Yakin mau hapus semua tontonan tersimpan? Tindakan ini tidak bisa dibatalkan.',
+    `<button class="btn btn-secondary" onclick="closeModal()" style="flex:1">Batal</button>
+     <button class="btn btn-primary" style="flex:1;background:var(--red);color:#fff;box-shadow:none" onclick="clearAllBookmarks()">Hapus</button>`
+  );
+}
+
+function clearAllBookmarks() {
+  bookmarks = [];
+  saveBookmarks();
+  updateProfileStats();
+  renderBookmarks();
+  closeModal();
+  showToast('🗑️ Semua bookmark dihapus');
+}
+
 // ===== SEARCH =====
+function searchGenre(genre) {
+  document.getElementById('searchInput').value = genre;
+  document.getElementById('searchClearBtn').style.display = 'flex';
+  doSearch(genre);
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClearBtn').style.display = 'none';
+  document.getElementById('searchResults').innerHTML = `
+    <div style="padding:0 0 12px">
+      <div class="section-title" style="margin-bottom:12px">Jelajahi Genre</div>
+      <div class="genre-grid">
+        <div class="genre-card" onclick="searchGenre('Anime')"><span class="genre-icon">🎌</span><span class="genre-name">Anime</span></div>
+        <div class="genre-card" onclick="searchGenre('Movie')"><span class="genre-icon">🎬</span><span class="genre-name">Movie</span></div>
+        <div class="genre-card" onclick="searchGenre('Action')"><span class="genre-icon">⚡</span><span class="genre-name">Action</span></div>
+        <div class="genre-card" onclick="searchGenre('Fantasy')"><span class="genre-icon">🔮</span><span class="genre-name">Fantasy</span></div>
+        <div class="genre-card" onclick="searchGenre('Comedy')"><span class="genre-icon">😂</span><span class="genre-name">Komedi</span></div>
+        <div class="genre-card" onclick="searchGenre('Romance')"><span class="genre-icon">💕</span><span class="genre-name">Romance</span></div>
+      </div>
+    </div>`;
+}
+
 function doSearch(q) {
   clearTimeout(searchTimeout);
   const container = document.getElementById('searchResults');
+  const clearBtn = document.getElementById('searchClearBtn');
+  clearBtn.style.display = q ? 'flex' : 'none';
 
   if (!q.trim()) {
-    container.innerHTML = `<div class="search-empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Ketik untuk mulai pencarian</p></div>`;
+    clearSearch();
     return;
   }
-
-  container.innerHTML = `<div class="search-empty"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:12px">Mencari "${esc(q)}"...</p></div>`;
+  container.innerHTML = `<div class="search-empty"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:14px">Mencari "<b>${esc(q)}</b>"…</p></div>`;
 
   searchTimeout = setTimeout(async () => {
     try {
       const res = await fetch(`${API}/api/search?q=${encodeURIComponent(q)}`);
       const data = await res.json();
-
       if (!data.videos || data.videos.length === 0) {
         container.innerHTML = `<div class="search-empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Tidak ditemukan untuk "<b>${esc(q)}</b>"</p></div>`;
         return;
       }
-
-      container.innerHTML = data.videos.map(v => `
-        <div class="search-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
-          <div class="search-item-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
-          <div class="search-item-info">
-            <div class="title">${esc(v.title)}</div>
-            <div class="meta">${esc(v.catName)} · ${v.date} · ${v.views} views</div>
+      container.innerHTML = `<div class="search-count">Ditemukan <b>${data.videos.length}</b> hasil untuk "<b>${esc(q)}</b>"</div>` +
+        data.videos.map(v => `
+          <div class="search-item" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
+            <div class="search-item-thumb"><img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy"></div>
+            <div class="search-item-info">
+              <div class="title">${esc(v.title)}</div>
+              <div class="meta">${esc(v.catName)} · ${v.date} · ${v.views} views</div>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `).join('');
     } catch(e) {
-      container.innerHTML = `<div class="search-empty"><p>Gagal mencari. Cek koneksi internet.</p></div>`;
+      container.innerHTML = `<div class="search-empty"><p>Gagal mencari. Periksa koneksi kamu.</p></div>`;
     }
-  }, 500);
+  }, 480);
 }
 
 // ===== NAVIGATION =====
@@ -647,29 +1309,29 @@ function goPage(name) {
   const navEl = document.getElementById('nav-' + name);
   if (navEl) navEl.classList.add('active');
   currentPage = name;
+
+  // page-specific init
+  if (name === 'bookmark') renderBookmarks();
+  if (name === 'profile') updateProfileStats();
 }
 
 function goBack() {
   const prev = pageStack.pop();
-  if (prev) {
-    const iframe = document.getElementById('playerIframe');
-    if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
-    goPage(prev);
-  } else {
-    goPage('home');
-  }
+  const iframe = document.getElementById('playerIframe');
+  if (iframe) { iframe.src = ''; iframe.style.display = 'none'; }
+  goPage(prev || 'home');
 }
 
 function filterCat(el, cat) {
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   currentCat = cat;
-  document.getElementById('latestCards').innerHTML = [...Array(5)].map(()=>`<div class="card"><div class="card-thumb skeleton"></div><div class="skeleton" style="height:11px;margin-top:7px"></div></div>`).join('');
+  document.getElementById('latestCards').innerHTML = [...Array(5)].map(()=>`<div class="card"><div class="card-thumb skeleton" style="aspect-ratio:2/3"></div><div class="skeleton" style="height:11px;margin-top:7px"></div></div>`).join('');
   fetchLatest(cat);
 }
 
 function loadMore() {
-  showToast('Memuat lebih banyak...');
+  showToast('⏳ Memuat lebih banyak...');
   fetch(`${API}/api/latest?category=${currentCat}&page=2`)
     .then(r => r.json())
     .then(data => {
@@ -679,21 +1341,25 @@ function loadMore() {
           <div class="card" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')">
             <div class="card-thumb">
               <img src="${proxyImg(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.parentElement.style.background='#222'">
+              <div class="card-overlay"></div>
               <div class="card-badge">${esc(v.catName)}</div>
+              <div class="card-play"><svg viewBox="0 0 24 24" fill="var(--gold)"><polygon points="5,3 19,12 5,21"/></svg></div>
             </div>
             <div class="card-title">${esc(v.title)}</div>
             <div class="card-sub">${v.views} views · ${v.date}</div>
           </div>
         `).join('');
-        showToast(`+${data.videos.length} konten dimuat`);
-      }
-    }).catch(() => showToast('Gagal memuat'));
+        showToast(`✓ +${data.videos.length} konten dimuat`);
+      } else { showToast('Tidak ada konten lagi'); }
+    }).catch(() => showToast('❌ Gagal memuat'));
 }
 
 function navSearchHandler(val) {
   if (val.length > 0) {
     goPage('search');
-    document.getElementById('searchInput').value = val;
+    const si = document.getElementById('searchInput');
+    si.value = val;
+    document.getElementById('searchClearBtn').style.display = 'flex';
     doSearch(val);
   }
 }
