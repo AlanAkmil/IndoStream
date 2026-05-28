@@ -413,21 +413,18 @@ input,button{font-family:inherit;}
 <!-- PLAYER -->
 <div class="page" id="page-player">
   <div class="ptop"><button class="pbk" onclick="goBack()"><svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg></button><div class="ptop-t" id="pht">Memuat...</div></div>
-  <div class="pframe" id="pframe">
-    <div class="ploading" id="ploading">
-      <div class="spin"></div>
-      <span style="font-size:12px;color:var(--td);margin-top:4px">Memuat video...</span>
+  <div class="pframe" id="pframe" style="cursor:pointer;position:relative;" onclick="openWatch()">
+    <img id="pthumb-img" src="" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.55;">
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+      <div style="width:62px;height:62px;background:var(--ac);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(232,93,38,.6);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><polygon points="6,3 20,12 6,21"/></svg>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:13px;font-weight:700;color:#fff;">Tap untuk Tonton</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">Buka di browser</div>
+      </div>
     </div>
-    <iframe id="pif" allowfullscreen allow="autoplay;fullscreen;encrypted-media" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation" style="display:none;width:100%;height:100%;border:none;"></iframe>
-    <div id="pframe-err" style="display:none;position:absolute;inset:0;background:#000;flex-direction:column;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16 10,8" fill="var(--ac)" stroke="none"/></svg>
-      <div style="font-size:14px;font-weight:700">Tonton di Browser</div>
-      <div style="font-size:12px;color:var(--td);line-height:1.6">Video tidak bisa diputar di dalam app.<br>Klik tombol di bawah untuk nonton.</div>
-      <button id="watchBtn" onclick="openWatch()" style="background:var(--ac);color:#fff;border:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-        Tonton Sekarang
-      </button>
-    </div>
+  </div>
   </div>
   <div class="pbody">
     <div class="ptitle" id="ptitle"></div>
@@ -590,7 +587,7 @@ function clrLib(){if(ltab==='saved')sSv([]);else if(ltab==='liked')sLk([]);else{
 
 // PLAYER
 let curWatchUrl="";
-function openWatch(){if(curWatchUrl)window.open(curWatchUrl,"_blank");}
+function openWatch(){if(curWatchUrl)window.open(curWatchUrl,"_blank","noopener");}
 function showWatchBtn(){document.getElementById("ploading").style.display="none";const e=document.getElementById("pframe-err");e.style.display="flex";}
 
 async function openPlayer(id,title,thumb){
