@@ -1,20 +1,15 @@
 const BASE = 'https://www.dubbindo.site';
 
 export default async function handler(req, res) {
-  const response = await fetch(`${BASE}/videos/latest?page_id=1`, {
+  const { id } = req.query || 'ZzirhOiP65l9uW2';
+  const response = await fetch(`${BASE}/embed/${id || 'ZzirhOiP65l9uW2'}`, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      'Referer': BASE,
+      'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36',
+      'Referer': 'https://www.dubbindo.site/',
+      'Origin': 'https://www.dubbindo.site',
     },
   });
   const html = await response.text();
-
-  const idx = html.indexOf('dubbindo.site/watch');
-  const raw = html.slice(idx - 5, idx + 100);
-
-  // Cek apakah ada karakter aneh
-  const hex = Buffer.from(raw).toString('hex');
-
   res.setHeader('Content-Type', 'text/plain');
-  res.send(`IDX: ${idx}\nRAW: ${raw}\nHEX: ${hex}`);
+  res.send(html.slice(0, 6000));
 }
