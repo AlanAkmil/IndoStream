@@ -611,33 +611,32 @@ async function openPlayer(id,title,thumb){
   document.getElementById('pht').textContent=title;
   document.getElementById('ptitle').textContent=title;
   document.getElementById('ploading').style.display='flex';
-  const pif=document.getElementById('pif');
-  pif.style.display='none';
-  document.getElementById('pframe-err').style.display='none';
+  const vid=document.getElementById('pvid');
+  vid.style.display='none';
+  vid.src='';
+  document.getElementById('perr').style.display='none';
   document.getElementById('pnext').innerHTML='';
   updPBtns();
   pstack.push(cp);goPage('player');setNav('');
   window.scrollTo(0,0);addWt();renderLib();
   const sc=id.replace(/\.html$/,'').split('_').pop();
   curWatchUrl=`https://www.dubbindo.site/watch/${id}`;
-  // Pakai embed URL
-  pif.src='';
-  pif.removeAttribute('sandbox');
-  pif.setAttribute('allow','autoplay; fullscreen; encrypted-media; picture-in-picture');
-  pif.src=`/api/proxy?id=${sc}`;
-  let done=false;
-  pif.onload=()=>{
-    if(done)return;done=true;
-    document.getElementById('ploading').style.display='none';
-    pif.style.display='block';
-  };
-  pif.onerror=()=>{if(!done){done=true;showWatchBtn();}};
-  setTimeout(()=>{
-    if(!done){done=true;
-      document.getElementById('ploading').style.display='none';
-      pif.style.display='block';
+  // Fetch video src langsung
+  try {
+    const r = await fetch(`/api/getsrc?id=${sc}`);
+    const d = await r.json();
+    if (d.src) {
+      vid.src = d.src;
+      vid.style.display = 'block';
+      document.getElementById('ploading').style.display = 'none';
+      vid.load();
+    } else {
+      throw new Error('no src');
     }
-  },4000);
+  } catch(e) {
+    document.getElementById('ploading').style.display = 'none';
+    document.getElementById('perr').style.display = 'flex';
+  }
   try{const r=await fetch(`${API}/api/latest?category=all&page=1`);const d=await r.json();const o=(d.videos||[]).filter(v=>v.id!==id).slice(0,6);document.getElementById('pnext').innerHTML=o.map(v=>`<div class="gc3" onclick="openPlayer('${esc(v.id)}','${esc(v.title)}','${esc(v.thumb)}')"><div class="gc3-img"><img src="${img(v.thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none'"><div class="gc3-ov"></div></div><div class="gc3-title">${esc(v.title)}</div></div>`).join('');}catch(e){}
 }
 function updPBtns(){document.getElementById('likeBtn').className='pa'+(gLk().some(l=>l.id===cid)?' liked':'');document.getElementById('saveBtn').className='pa'+(gSv().some(s=>s.id===cid)?' saved':'');}
