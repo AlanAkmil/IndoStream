@@ -1,4 +1,4 @@
-export const config = { api: { responseLimit: '50mb' } };
+export const config = { api: { responseLimit: false } };
 
 export default async function handler(req, res) {
   const { url } = req.query;
@@ -9,30 +9,43 @@ export default async function handler(req, res) {
     'Referer': 'https://www.dubbindo.site/',
     'Origin': 'https://www.dubbindo.site',
     'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36',
+    'Accept': '*/*',
   };
   if (range) headers['Range'] = range;
 
   try {
-    const upstream = await fetch(url, { headers });
-    if (!upstream.ok && upstream.status !== 206) {
-      // Follow redirect manually
-      const loc = upstream.headers.get('location');
-      if (loc) return res.redirect(302, loc);
-      return res.status(upstream.status).send('Upstream error');
+    const upstream = await fetch(url, { headers, redirect: 'follow' });
+    
+    const status = upstream.status;
+    if (status !== 200 && status !== 206) {
+      return res.status(status).send('Upstream: ' + status);
     }
 
-    res.setHeader('Content-Type', upstream.headers.get('content-type') || 'video/mp4');
-    res.setHeader('Accept-Ranges', 'bytes');
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const ct = upstream.headers.get('content-type') || 'video/mp4';
     const cl = upstream.headers.get('content-length');
     const cr = upstream.headers.get('content-range');
+
+    res.setHeader('Content-Type', ct);
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     if (cl) res.setHeader('Content-Length', cl);
     if (cr) res.setHeader('Content-Range', cr);
     res.status(range ? 206 : 200);
 
-    const buf = await upstream.arrayBuffer();
-    res.end(Buffer.from(buf));
+    // Stream response body
+    const reader = upstream.body.getReader();
+    const pump = async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) { res.end(); break; }
+        const ok = res.write(Buffer.from(value));
+        if (!ok) await new Promise(r => res.once('drain', r));
+      }
+    };
+    await pump();
+
   } catch(e) {
-    res.status(500).send(e.message);
+    if (!res.headersSent) res.status(500).send(e.message);
   }
 }
