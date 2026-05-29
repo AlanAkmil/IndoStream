@@ -488,12 +488,13 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 function openMo(h){document.getElementById('mc').innerHTML=h;document.getElementById('mo').classList.add('on');}
 function closeMo(){document.getElementById('mo').classList.remove('on');}
 
+function decodeHtml(s){const t=document.createElement('textarea');t.innerHTML=s;return t.value;}
 window.addEventListener('click', e => {
   const card = e.target.closest('[data-id]');
   if (card) {
-    const id = card.dataset.id;
-    const title = card.dataset.title;
-    const thumb = card.dataset.thumb;
+    const id = decodeHtml(card.dataset.id||'');
+    const title = decodeHtml(card.dataset.title||'');
+    const thumb = decodeHtml(card.dataset.thumb||'');
     if (id) openPlayer(id, title, thumb);
   }
 });
