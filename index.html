@@ -621,22 +621,15 @@ async function openPlayer(id,title,thumb){
   window.scrollTo(0,0);addWt();renderLib();
   const sc=id.replace(/\.html$/,'').split('_').pop();
   curWatchUrl=`https://www.dubbindo.site/watch/${id}`;
-  // Fetch video src
+  // Fetch video src lalu proxy
   try {
     const r = await fetch(`/api/getsrc?id=${sc}`);
     const d = await r.json();
     if (d.src) {
-      vid.src = d.src;
-      vid.crossOrigin = '';
+      vid.src = `/api/video?url=${encodeURIComponent(d.src)}`;
       vid.style.display = 'block';
       document.getElementById('ploading').style.display = 'none';
       vid.load();
-      vid.onerror = async () => {
-        // CORS block - coba via /api/video proxy
-        vid.crossOrigin = null;
-        vid.src = `/api/video?url=${encodeURIComponent(d.src)}`;
-        vid.load();
-      };
     } else {
       throw new Error('no src');
     }
