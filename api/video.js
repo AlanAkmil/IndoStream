@@ -1,24 +1,24 @@
+// api/video.js — follow redirect dan return final URL
 export default async function handler(req, res) {
   const { url } = req.query;
-  if (!url || !url.includes('dubbindo')) return res.status(403).json({error:'Forbidden'});
+  if (!url) return res.status(400).json({ error: 'Missing url' });
 
   try {
-    const upstream = await fetch(url, {
+    const decoded = decodeURIComponent(url);
+    const response = await fetch(decoded, {
       method: 'HEAD',
+      redirect: 'follow',
       headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Referer': 'https://www.dubbindo.site/',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/120.0.0.0',
       },
-      redirect: 'manual',
     });
 
-    const location = upstream.headers.get('location');
-    const finalUrl = location || url;
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.json({ url: finalUrl });
-
-  } catch(e) {
-    res.status(500).json({ error: e.message });
+    // response.url adalah URL final setelah redirect
+    const finalUrl = response.url || decoded;
+    res.status(200).json({ url: finalUrl, status: response.status });
+  } catch (err) {
+    // Kalau gagal follow, return URL asli aja
+    res.status(200).json({ url: decodeURIComponent(url), error: err.message });
   }
 }
